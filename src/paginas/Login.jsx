@@ -3,7 +3,8 @@ import { useState } from "react"; //importa funcion useState de react
 function Login() { //componente
 
   const [email, setEmail] = useState(''); //crea un estado vacio separado en dos variables
-  const [password, setPassword] = useState(''); //crea un estado vacio separado en dos variables
+  const [password, setPassword] = useState(''); 
+  const [error, setError] = useState('');
 
   function cambiarEmail(evento) { //funcion que se ejecuta en la tecla
     setEmail(evento.target.value);
@@ -16,21 +17,37 @@ function Login() { //componente
   function enviarFormulario(evento) {
     evento.preventDefault();
 
-    console.log('Email:', email);
-    console.log('Password:', password);
+    if (email.trim() === ''){ //.trim devuelve el texto sin espacios al principio ni al final
+      setError('El mail es obligatorio');
+      return;
+    }
 
+    const formatoEmail = /^\S+@\S+\.\S+$/;
+    if (formatoEmail.test(email) === false) {
+      setError('El email no tiene un formato válido.');
+      return;
+    }
+
+    if (password.trim() === ''){
+      setError('La contraseña es obligatoria.');
+      return;
+    }
+
+    setError('');
+    console.log('Datos validos, listo para enviar:',email);
   }
   return (
     <div className="login"> 
       <h2>Iniciar sesión</h2>
 
-      <form onSubmit={enviarFormulario}>
+      <form onSubmit={enviarFormulario} noValidate>
         <label htmlFor="email">Email</label>
         <input id="email" type="email" value={email} onChange={cambiarEmail}/>
-
         <label htmlFor="password">Contraseña</label>
         <input id="password" type="password" value={password} onChange={cambiarPassword}/>
 
+        {error !== '' && <p className='error'>{error}</p>} {/*hace aparecer el error en la pantalla*/}
+        
         <button type="submit">Ingresar</button>
       </form>
     </div>
