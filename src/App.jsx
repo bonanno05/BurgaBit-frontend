@@ -1,5 +1,7 @@
+import Login from './paginas/Login';  //importa el componente
+
 function App() {
-  return <h1>BurgaBit</h1>;
+  return <Login />;
 }
 
 export default App;
