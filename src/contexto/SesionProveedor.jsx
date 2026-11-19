@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { SesionContexto } from './SesionContexto';
 
 // Lee la parte del medio del JWT (los datos) y la convierte en objeto.
@@ -48,15 +48,15 @@ export function SesionProveedor(props) {
     rol = datos.rol;
   }
 
-  function guardarSesion(tokenNuevo) {
+  const guardarSesion = useCallback(function (tokenNuevo) {
     localStorage.setItem('token', tokenNuevo);
     setToken(tokenNuevo);
-  }
+  }, []);
 
-  function cerrarSesion() {
+  const cerrarSesion = useCallback(function () {
     localStorage.removeItem('token');
     setToken(null);
-  }
+  }, []);
 
   const valor = {
     token: token,

@@ -2,7 +2,7 @@ const URL_BACKEND = 'https://burgabit.onrender.com/api';
 
 // Hace un pedido al backend y devuelve los datos de la respuesta.
 // Si algo sale mal, lanza un Error con un mensaje para mostrarle al usuario.
-export async function pedirAlBackend(ruta, metodo, cuerpo) {
+export async function pedirAlBackend(ruta, metodo, cuerpo, token) {
   const opciones = {
     method: metodo,
     headers: {
@@ -12,6 +12,10 @@ export async function pedirAlBackend(ruta, metodo, cuerpo) {
 
   if (cuerpo !== undefined) {
     opciones.body = JSON.stringify(cuerpo);
+  }
+
+  if (token !== undefined) {
+    opciones.headers.Authorization = 'Bearer ' + token;
   }
 
   let respuesta;
@@ -31,7 +35,9 @@ export async function pedirAlBackend(ruta, metodo, cuerpo) {
   }
 
   if (respuesta.ok === false) {
-    throw new Error(datos.msg);
+    const fallo = new Error(datos.msg);
+    fallo.status = respuesta.status;
+    throw fallo;
   }
 
   return datos;

@@ -7,6 +7,7 @@ import RutaProtegida from './componentes/RutaProtegida';
 import PaginaProvisoria from './componentes/PaginaProvisoria';
 import Login from './paginas/Login';
 import Registro from './paginas/Registro';
+import MisPedidos from './paginas/MisPedidos';
 
 function App() {
   const sesion = useContext(SesionContexto);
@@ -41,7 +42,7 @@ function App() {
           path="/mis-pedidos"
           element={
             <RutaProtegida rolesPermitidos={['cliente']}>
-              <PaginaProvisoria titulo="Mis pedidos" />
+              <MisPedidos/>
             </RutaProtegida>
           }
         />
