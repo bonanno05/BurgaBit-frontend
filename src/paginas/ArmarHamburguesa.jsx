@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { usePedidoConSesion } from '../contexto/usePedidoConSesion';
 import { formatearPrecio } from '../utilidades/formato';
 import SelectorIngrediente from '../componentes/SelectorIngrediente';
+import ResumenPedido from '../componentes/ResumenPedido';
 
 // La misma regla que MAX_POR_INGREDIENTE en clienteControlador.js del backend.
 const MAXIMO_POR_INGREDIENTE = 3;
@@ -12,7 +13,8 @@ function ArmarHamburguesa() {
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState('');
   const [seleccion, setSeleccion] = useState({});
-
+  const [pasoActual, setPasoActual] = useState(0);
+  const [productos, setProductos] = useState([]);
   const pedirConSesion = usePedidoConSesion();
 
   useEffect(function () {
@@ -60,14 +62,28 @@ function ArmarHamburguesa() {
     return suma;
   }
 
+    // Cuántas unidades de un ingrediente ya están en las hamburguesas agregadas al pedido.
+  function cantidadEnPedido(idIngrediente) {
+    let suma = 0;
+    for (const producto of productos) {
+      for (const item of producto.items) {
+        if (item.ingrediente === idIngrediente) {
+          suma = suma + item.cantidad;
+        }
+      }
+    }
+    return suma;
+  }
+
   // Se puede sumar uno más si no pasa el máximo por ingrediente, el stock ni el máximo de la categoría.
+  // El stock se comparte entre todas las hamburguesas del pedido.
   function puedeSumar(ingrediente) {
     const cantidad = cantidadElegida(ingrediente._id);
 
     if (cantidad >= MAXIMO_POR_INGREDIENTE) {
       return false;
     }
-    if (cantidad >= ingrediente.cantidad) {
+    if (cantidad + cantidadEnPedido(ingrediente._id) >= ingrediente.cantidad) {
       return false;
     }
     if (cantidadEnCategoria(ingrediente.categoria) >= ingrediente.categoria.maximo) {
@@ -108,6 +124,68 @@ function ArmarHamburguesa() {
     return total;
   }
 
+    // La hamburguesa está completa si tiene al menos un ingrediente y cumple el mínimo de todas las categorías.
+  function hamburguesaCompleta() {
+    if (Object.keys(seleccion).length === 0) {
+      return false;
+    }
+    for (const categoria of categorias) {
+      if (cantidadEnCategoria(categoria) < categoria.minimo) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  function agregarAlPedido() {
+    if (hamburguesaCompleta() === false) {
+      return;
+    }
+
+    const items = [];
+    for (const ingrediente of ingredientes) {
+      const cantidad = cantidadElegida(ingrediente._id);
+      if (cantidad > 0) {
+        items.push({
+          ingrediente: ingrediente._id,
+          nombre: ingrediente.nombre,
+          precio: ingrediente.precio,
+          cantidad: cantidad,
+        });
+      }
+    }
+
+    const nuevoProducto = {
+      id: crypto.randomUUID(),
+      items: items,
+      subtotalEstimado: precioEstimado(),
+    };
+
+    setProductos([...productos, nuevoProducto]);
+    setSeleccion({});
+    setPasoActual(0);
+  }
+
+  function quitarDelPedido(idProducto) {
+    const productosNuevos = productos.filter(function (producto) {
+      return producto.id !== idProducto;
+    });
+    setProductos(productosNuevos);
+  }
+
+  function irAlAnterior() {
+    if (pasoActual > 0) {
+      setPasoActual(pasoActual - 1);
+    }
+  }
+
+  function irAlSiguiente() {
+    const esElUltimo = pasoActual === categorias.length - 1;
+    if (esElUltimo === false) {
+      setPasoActual(pasoActual + 1);
+    }
+  }
+
   if (cargando) {
     return <p>Cargando el menú…</p>;
   }
@@ -116,49 +194,75 @@ function ArmarHamburguesa() {
     return <p className="error">{error}</p>;
   }
 
+    if (categorias.length === 0) {
+    return <p>Todavía no hay pasos cargados en el menú.</p>;
+  }
+
+  const categoria = categorias[pasoActual];
+  const opciones = ingredientesDe(categoria);
+  const elegidos = cantidadEnCategoria(categoria);
+  const cumpleMinimo = elegidos >= categoria.minimo;
+  const esElPrimero = pasoActual === 0;
+  const esElUltimo = pasoActual === categorias.length - 1;
+
   return (
     <div className="armar">
       <h2>Armá tu hamburguesa</h2>
 
-      {categorias.map(function (categoria) {
-        const opciones = ingredientesDe(categoria);
-        const elegidos = cantidadEnCategoria(categoria);
+      <p className="progreso">
+        Paso {pasoActual + 1} de {categorias.length}
+      </p>
 
-        return (
-          <section key={categoria._id} className="paso">
-            <h3>
-              Paso {categoria.paso}: {categoria.nombre}
-            </h3>
-            <p>
-              Elegí entre {categoria.minimo} y {categoria.maximo}. Llevás {elegidos}.
-            </p>
+      <section className="paso">
+        <h3>{categoria.nombre}</h3>
+        <p>
+          Elegí entre {categoria.minimo} y {categoria.maximo}. Llevás {elegidos}.
+        </p>
 
-            {elegidos < categoria.minimo && (
-              <p className="aviso">Te falta elegir al menos {categoria.minimo - elegidos}.</p>
-            )}
+        {cumpleMinimo === false && (
+          <p className="aviso">Te falta elegir al menos {categoria.minimo - elegidos}.</p>
+        )}
 
-            {opciones.length === 0 && <p>No hay ingredientes disponibles en este paso.</p>}
+        {opciones.length === 0 && <p>No hay ingredientes disponibles en este paso.</p>}
 
-            <ul>
-              {opciones.map(function (ingrediente) {
-                return (
-                  <SelectorIngrediente
-                    key={ingrediente._id}
-                    ingrediente={ingrediente}
-                    cantidad={cantidadElegida(ingrediente._id)}
-                    puedeSumar={puedeSumar(ingrediente)}
-                    alSumar={function () { sumar(ingrediente); }}
-                    alRestar={function () { restar(ingrediente); }}
-                  />
-                );
-              })}
-            </ul>
-          </section>
-        );
-      })}
+        <ul>
+          {opciones.map(function (ingrediente) {
+            return (
+              <SelectorIngrediente
+                key={ingrediente._id}
+                ingrediente={ingrediente}
+                cantidad={cantidadElegida(ingrediente._id)}
+                puedeSumar={puedeSumar(ingrediente)}
+                alSumar={function () { sumar(ingrediente); }}
+                alRestar={function () { restar(ingrediente); }}
+              />
+            );
+          })}
+        </ul>
+      </section>
 
-      <p className="total">Precio estimado: {formatearPrecio(precioEstimado())}</p>
-      <p className="nota">El precio final lo calcula el sistema al confirmar el pedido.</p>
+      <div className="navegacion-pasos">
+        <button type="button" onClick={irAlAnterior} disabled={esElPrimero}>
+          Anterior
+        </button>
+
+        {esElUltimo === false && (
+          <button type="button" onClick={irAlSiguiente} disabled={cumpleMinimo === false}>
+            Siguiente
+          </button>
+        )}
+
+        {esElUltimo && (
+          <button type="button" onClick={agregarAlPedido} disabled={hamburguesaCompleta() === false}>
+            Agregar al pedido
+          </button>
+        )}
+      </div>
+
+      <p className="total">Esta hamburguesa: {formatearPrecio(precioEstimado())}</p>
+      <p className="nota">Los precios son estimados: el final lo calcula el sistema al confirmar el pedido.</p>
+
+      <ResumenPedido productos={productos} alQuitar={quitarDelPedido} />
     </div>
   );
 }
