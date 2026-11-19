@@ -1,0 +1,38 @@
+const URL_BACKEND = 'https://burgabit.onrender.com/api';
+
+// Hace un pedido al backend y devuelve los datos de la respuesta.
+// Si algo sale mal, lanza un Error con un mensaje para mostrarle al usuario.
+export async function pedirAlBackend(ruta, metodo, cuerpo) {
+  const opciones = {
+    method: metodo,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  };
+
+  if (cuerpo !== undefined) {
+    opciones.body = JSON.stringify(cuerpo);
+  }
+
+  let respuesta;
+
+  try {
+    respuesta = await fetch(URL_BACKEND + ruta, opciones);
+  } catch {
+    throw new Error('No se pudo conectar con el servidor. Probá de nuevo en unos segundos.');
+  }
+
+  let datos;
+
+  try {
+    datos = await respuesta.json();
+  } catch {
+    throw new Error('El servidor respondió algo inesperado. Probá de nuevo.');
+  }
+
+  if (respuesta.ok === false) {
+    throw new Error(datos.msg);
+  }
+
+  return datos;
+}

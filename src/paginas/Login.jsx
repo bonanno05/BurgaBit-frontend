@@ -1,6 +1,7 @@
 import { iniciarSesion } from '../servicios/authServicio'; //importa funcion de servicio de autenticación
 import { useState, useContext } from 'react';
 import { SesionContexto } from '../contexto/SesionContexto';
+import { Link } from 'react-router';
 
 function Login() { //componente
 
@@ -27,8 +28,8 @@ function Login() { //componente
       return;
     }
 
-    const formatoEmail = /^\S+@\S+\.\S+$/;
-    if (formatoEmail.test(email) === false) {
+    const formatoEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (formatoEmail.test(email.trim()) === false) {
       setError('El email no tiene un formato válido.');
       return;
     }
@@ -43,7 +44,7 @@ function Login() { //componente
 
     try{
 
-      const token = await iniciarSesion(email, password);
+      const token = await iniciarSesion(email.trim().toLowerCase(), password);
       sesion.guardarSesion(token);
 
     } catch (fallo) {
@@ -73,6 +74,9 @@ function Login() { //componente
         
         <button type="submit" disabled={cargando}>{cargando ? 'Ingresando' : 'Ingresar' }</button>
       </form>
+      <p>
+        ¿No tenés cuenta? <Link to="/registro">Registrate</Link>
+      </p>
     </div>
   );
 }

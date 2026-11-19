@@ -6,6 +6,7 @@ import BarraNavegacion from './componentes/BarraNavegacion';
 import RutaProtegida from './componentes/RutaProtegida';
 import PaginaProvisoria from './componentes/PaginaProvisoria';
 import Login from './paginas/Login';
+import Registro from './paginas/Registro';
 
 function App() {
   const sesion = useContext(SesionContexto);
@@ -25,7 +26,7 @@ function App() {
         />
         <Route
           path="/registro"
-          element={haySesion ? <Navigate to={inicio} replace /> : <PaginaProvisoria titulo="Registro" />}
+          element={haySesion ? <Navigate to={inicio} replace /> : <Registro />}
         />
 
         <Route
