@@ -8,6 +8,7 @@ import PaginaProvisoria from './componentes/PaginaProvisoria';
 import Login from './paginas/Login';
 import Registro from './paginas/Registro';
 import MisPedidos from './paginas/MisPedidos';
+import ArmarHamburguesa from './paginas/ArmarHamburguesa';
 
 function App() {
   const sesion = useContext(SesionContexto);
@@ -34,7 +35,7 @@ function App() {
           path="/armar"
           element={
             <RutaProtegida rolesPermitidos={['cliente']}>
-              <PaginaProvisoria titulo="Armar hamburguesa" />
+              <ArmarHamburguesa/>
             </RutaProtegida>
           }
         />

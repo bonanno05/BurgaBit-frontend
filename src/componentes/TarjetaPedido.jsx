@@ -1,14 +1,7 @@
 // Muestra un pedido: fecha, estado, productos con sus ingredientes y total.
 // Lo que se ponga entre <TarjetaPedido> y </TarjetaPedido> (botones) se dibuja al final.
 
-function formatearPrecio(numero) {
-  return '$ ' + numero.toLocaleString('es-AR');
-}
-
-function formatearFecha(textoFecha) {
-  const fecha = new Date(textoFecha);
-  return fecha.toLocaleString('es-AR', { dateStyle: 'short', timeStyle: 'short' });
-}
+import { formatearPrecio, formatearFecha } from '../utilidades/formato';
 
 function TarjetaPedido(props) {
   const pedido = props.pedido;
