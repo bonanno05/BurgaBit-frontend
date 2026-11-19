@@ -1,5 +1,6 @@
-import { useState } from "react"; //importa funcion useState de react
 import { iniciarSesion } from '../servicios/authServicio'; //importa funcion de servicio de autenticación
+import { useState, useContext } from 'react';
+import { SesionContexto } from '../contexto/SesionContexto';
 
 function Login() { //componente
 
@@ -7,6 +8,8 @@ function Login() { //componente
   const [password, setPassword] = useState(''); 
   const [error, setError] = useState('');
   const [cargando, setCargando] = useState(false);
+  const sesion = useContext(SesionContexto);
+
 
   function cambiarEmail(evento) { //funcion que se ejecuta en la tecla
     setEmail(evento.target.value);
@@ -39,12 +42,18 @@ function Login() { //componente
     setCargando(true);
 
     try{
+
       const token = await iniciarSesion(email, password);
-      console.log('Token recibido:',token);
+      sesion.guardarSesion(token);
+
     } catch (fallo) {
+
       setError(fallo.message);
+
     } finally {
+
       setCargando(false);
+      
     }
   }
 
