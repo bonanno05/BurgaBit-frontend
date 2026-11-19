@@ -1,4 +1,5 @@
 import { useState } from "react"; //importa funcion useState de react
+import { iniciarSesion } from '../servicios/authServicio'; //importa funcion de servicio de autenticación
 
 function Login() { //componente
 
@@ -14,7 +15,7 @@ function Login() { //componente
     setPassword(evento.target.value);
   }
 
-  function enviarFormulario(evento) {
+  async function enviarFormulario(evento) {
     evento.preventDefault();
 
     if (email.trim() === ''){ //.trim devuelve el texto sin espacios al principio ni al final
@@ -34,7 +35,13 @@ function Login() { //componente
     }
 
     setError('');
-    console.log('Datos validos, listo para enviar:',email);
+
+    try{
+      const token = await iniciarSesion(email, password);
+      console.log('Token recibido:',token);
+    } catch (fallo) {
+      setError(fallo.message);
+    }
   }
   return (
     <div className="login"> 
