@@ -9,6 +9,7 @@ import Login from './paginas/Login';
 import Registro from './paginas/Registro';
 import MisPedidos from './paginas/MisPedidos';
 import ArmarHamburguesa from './paginas/ArmarHamburguesa';
+import Cocina from './paginas/Cocina';
 
 function App() {
   const sesion = useContext(SesionContexto);
@@ -52,7 +53,7 @@ function App() {
           path="/cocina"
           element={
             <RutaProtegida rolesPermitidos={['cocinero']}>
-              <PaginaProvisoria titulo="Pedidos de cocina" />
+              <Cocina/>
             </RutaProtegida>
           }
         />
