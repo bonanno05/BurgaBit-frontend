@@ -6,6 +6,7 @@ function Login() { //componente
   const [email, setEmail] = useState(''); //crea un estado vacio separado en dos variables
   const [password, setPassword] = useState(''); 
   const [error, setError] = useState('');
+  const [cargando, setCargando] = useState(false);
 
   function cambiarEmail(evento) { //funcion que se ejecuta en la tecla
     setEmail(evento.target.value);
@@ -35,14 +36,20 @@ function Login() { //componente
     }
 
     setError('');
+    setCargando(true);
 
     try{
       const token = await iniciarSesion(email, password);
       console.log('Token recibido:',token);
     } catch (fallo) {
       setError(fallo.message);
+    } finally {
+      setCargando(false);
     }
   }
+
+
+
   return (
     <div className="login"> 
       <h2>Iniciar sesión</h2>
@@ -55,7 +62,7 @@ function Login() { //componente
 
         {error !== '' && <p className='error'>{error}</p>} {/*hace aparecer el error en la pantalla*/}
         
-        <button type="submit">Ingresar</button>
+        <button type="submit" disabled={cargando}>{cargando ? 'Ingresando' : 'Ingresar' }</button>
       </form>
     </div>
   );
