@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router';
 import { usePedidoConSesion } from '../contexto/usePedidoConSesion';
 import { formatearPrecio } from '../utilidades/formato';
 import SelectorIngrediente from '../componentes/SelectorIngrediente';
@@ -16,6 +17,9 @@ function ArmarHamburguesa() {
   const [pasoActual, setPasoActual] = useState(0);
   const [productos, setProductos] = useState([]);
   const pedirConSesion = usePedidoConSesion();
+  const [enviando, setEnviando] = useState(false);
+  const [errorPedido, setErrorPedido] = useState('');
+  const navegar = useNavigate();
 
   useEffect(function () {
     async function cargarMenu() {
@@ -173,6 +177,39 @@ function ArmarHamburguesa() {
     setProductos(productosNuevos);
   }
 
+  // Arma el JSON que pide el backend: solo el id y la cantidad de cada ingrediente.
+  // El nombre y el precio son para mostrar; el backend los busca en la base de datos.
+  function armarCuerpoDelPedido() {
+    const productosParaEnviar = [];
+    for (const producto of productos) {
+      const ingredientesParaEnviar = [];
+      for (const item of producto.items) {
+        ingredientesParaEnviar.push({
+          ingrediente: item.ingrediente,
+          cantidad: item.cantidad,
+        });
+      }
+      productosParaEnviar.push({ ingredientes: ingredientesParaEnviar });
+    }
+    return { productos: productosParaEnviar };
+  }
+
+  async function confirmarPedido() {
+    if (productos.length === 0) {
+      return;
+    }
+
+    setEnviando(true);
+    setErrorPedido('');
+    try {
+      await pedirConSesion('/cliente', 'POST', armarCuerpoDelPedido());
+      navegar('/mis-pedidos');
+    } catch (fallo) {
+      setErrorPedido(fallo.message);
+      setEnviando(false);
+    }
+  }
+
   function irAlAnterior() {
     if (pasoActual > 0) {
       setPasoActual(pasoActual - 1);
@@ -262,7 +299,12 @@ function ArmarHamburguesa() {
       <p className="total">Esta hamburguesa: {formatearPrecio(precioEstimado())}</p>
       <p className="nota">Los precios son estimados: el final lo calcula el sistema al confirmar el pedido.</p>
 
-      <ResumenPedido productos={productos} alQuitar={quitarDelPedido} />
+      <ResumenPedido productos={productos} alQuitar={quitarDelPedido}>
+        {errorPedido !== '' && <p className="error">{errorPedido}</p>}
+        <button type="button" onClick={confirmarPedido} disabled={enviando}>
+          {enviando ? 'Enviando pedido…' : 'Confirmar pedido'}
+        </button>
+      </ResumenPedido>
     </div>
   );
 }
