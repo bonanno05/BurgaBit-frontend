@@ -11,6 +11,7 @@ import MisPedidos from './paginas/MisPedidos';
 import ArmarHamburguesa from './paginas/ArmarHamburguesa';
 import Cocina from './paginas/Cocina';
 import AdminPedidos from './paginas/AdminPedidos';
+import AdminUsuarios from './paginas/AdminUsuarios';
 
 function App() {
   const sesion = useContext(SesionContexto);
@@ -71,7 +72,7 @@ function App() {
           path="/admin/usuarios"
           element={
             <RutaProtegida rolesPermitidos={['administrador']}>
-              <PaginaProvisoria titulo="Usuarios" />
+              <AdminUsuarios/>
             </RutaProtegida>
           }
         />

@@ -43,9 +43,11 @@ export function SesionProveedor(props) {
   const [token, setToken] = useState(buscarTokenGuardado);
 
   let rol = null;
+  let idUsuario = null;
   if (token !== null) {
     const datos = leerDatosDelToken(token);
     rol = datos.rol;
+    idUsuario = datos.id;
   }
 
   const guardarSesion = useCallback(function (tokenNuevo) {
@@ -61,6 +63,7 @@ export function SesionProveedor(props) {
   const valor = {
     token: token,
     rol: rol,
+    idUsuario: idUsuario,
     guardarSesion: guardarSesion,
     cerrarSesion: cerrarSesion,
   };
