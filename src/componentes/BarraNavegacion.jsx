@@ -28,8 +28,6 @@ function BarraNavegacion() {
           <NavLink to="/admin/categorias">Categorías</NavLink>
         </>
       )}
-
-      <NavLink to="/perfil">Mi perfil</NavLink>
       <button onClick={sesion.cerrarSesion}>Cerrar sesión</button>
     </nav>
   );

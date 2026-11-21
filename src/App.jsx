@@ -4,7 +4,6 @@ import { SesionContexto } from './contexto/SesionContexto';
 import { inicioSegunRol } from './contexto/inicioSegunRol';
 import BarraNavegacion from './componentes/BarraNavegacion';
 import RutaProtegida from './componentes/RutaProtegida';
-import PaginaProvisoria from './componentes/PaginaProvisoria';
 import Login from './paginas/Login';
 import Registro from './paginas/Registro';
 import MisPedidos from './paginas/MisPedidos';
@@ -91,15 +90,6 @@ function App() {
           element={
             <RutaProtegida rolesPermitidos={['administrador']}>
               <AdminCategorias/>
-            </RutaProtegida>
-          }
-        />
-
-        <Route
-          path="/perfil"
-          element={
-            <RutaProtegida rolesPermitidos={['cliente', 'cocinero', 'administrador']}>
-              <PaginaProvisoria titulo="Mi perfil" />
             </RutaProtegida>
           }
         />
