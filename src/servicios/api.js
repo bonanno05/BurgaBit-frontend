@@ -1,4 +1,4 @@
-const URL_BACKEND = 'https://burgabit.onrender.com/api';
+const URL_BACKEND = import.meta.env.VITE_URL_BACKEND;
 
 // Hace un pedido al backend y devuelve los datos de la respuesta.
 // Si algo sale mal, lanza un Error con un mensaje para mostrarle al usuario.
