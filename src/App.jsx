@@ -23,79 +23,81 @@ function App() {
     <>
       {haySesion && <BarraNavegacion />}
 
-      <Routes>
-        <Route path="/" element={<Navigate to={inicio} replace />} />
+      <main className="contenido">
+        <Routes>
+          <Route path="/" element={<Navigate to={inicio} replace />} />
 
-        <Route
-          path="/login"
-          element={haySesion ? <Navigate to={inicio} replace /> : <Login />}
-        />
-        <Route
-          path="/registro"
-          element={haySesion ? <Navigate to={inicio} replace /> : <Registro />}
-        />
+          <Route
+            path="/login"
+            element={haySesion ? <Navigate to={inicio} replace /> : <Login />}
+          />
+          <Route
+            path="/registro"
+            element={haySesion ? <Navigate to={inicio} replace /> : <Registro />}
+          />
 
-        <Route
-          path="/armar"
-          element={
-            <RutaProtegida rolesPermitidos={['cliente']}>
-              <ArmarHamburguesa/>
-            </RutaProtegida>
-          }
-        />
-        <Route
-          path="/mis-pedidos"
-          element={
-            <RutaProtegida rolesPermitidos={['cliente']}>
-              <MisPedidos/>
-            </RutaProtegida>
-          }
-        />
+          <Route
+            path="/armar"
+            element={
+              <RutaProtegida rolesPermitidos={['cliente']}>
+                <ArmarHamburguesa/>
+              </RutaProtegida>
+            }
+          />
+          <Route
+            path="/mis-pedidos"
+            element={
+              <RutaProtegida rolesPermitidos={['cliente']}>
+                <MisPedidos/>
+              </RutaProtegida>
+            }
+          />
 
-        <Route
-          path="/cocina"
-          element={
-            <RutaProtegida rolesPermitidos={['cocinero']}>
-              <Cocina/>
-            </RutaProtegida>
-          }
-        />
+          <Route
+            path="/cocina"
+            element={
+              <RutaProtegida rolesPermitidos={['cocinero']}>
+                <Cocina/>
+              </RutaProtegida>
+            }
+          />
 
-        <Route
-          path="/admin/pedidos"
-          element={
-            <RutaProtegida rolesPermitidos={['administrador']}>
-              <AdminPedidos/>
-            </RutaProtegida>
-          }
-        />
-        <Route
-          path="/admin/usuarios"
-          element={
-            <RutaProtegida rolesPermitidos={['administrador']}>
-              <AdminUsuarios/>
-            </RutaProtegida>
-          }
-        />
-        <Route
-          path="/admin/ingredientes"
-          element={
-            <RutaProtegida rolesPermitidos={['administrador']}>
-              <AdminIngredientes/>
-            </RutaProtegida>
-          }
-        />
-        <Route
-          path="/admin/categorias"
-          element={
-            <RutaProtegida rolesPermitidos={['administrador']}>
-              <AdminCategorias/>
-            </RutaProtegida>
-          }
-        />
+          <Route
+            path="/admin/pedidos"
+            element={
+              <RutaProtegida rolesPermitidos={['administrador']}>
+                <AdminPedidos/>
+              </RutaProtegida>
+            }
+          />
+          <Route
+            path="/admin/usuarios"
+            element={
+              <RutaProtegida rolesPermitidos={['administrador']}>
+                <AdminUsuarios/>
+              </RutaProtegida>
+            }
+          />
+          <Route
+            path="/admin/ingredientes"
+            element={
+              <RutaProtegida rolesPermitidos={['administrador']}>
+                <AdminIngredientes/>
+              </RutaProtegida>
+            }
+          />
+          <Route
+            path="/admin/categorias"
+            element={
+              <RutaProtegida rolesPermitidos={['administrador']}>
+                <AdminCategorias/>
+              </RutaProtegida>
+            }
+          />
 
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </main>
     </>
   );
 }

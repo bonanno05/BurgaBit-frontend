@@ -1,0 +1,398 @@
+/* =========================================================
+   Estilos de BurgaBit
+   Se escriben primero para celular (pantalla angosta) y después,
+   con @media, se agregan los cambios para pantallas más anchas.
+   ========================================================= */
+
+/* ---------- 1. Colores y medidas que se repiten (variables) ---------- */
+:root {
+  --color-fondo: #fdf8f3;
+  --color-superficie: #ffffff;
+  --color-texto: #2b2118;
+  --color-suave: #7a6a5c;
+  --color-borde: #e8ddd2;
+  --color-principal: #c2410c;
+  --color-principal-oscuro: #9a3412;
+  --color-error: #b91c1c;
+  --color-error-fondo: #fef2f2;
+  --color-exito: #15803d;
+  --color-exito-fondo: #f0fdf4;
+  --color-aviso: #a16207;
+  --color-aviso-fondo: #fefce8;
+
+  --radio: 10px;
+  --sombra: 0 1px 3px rgba(43, 33, 24, 0.12);
+}
+
+/* ---------- 2. Base ---------- */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--color-texto);
+  background-color: var(--color-fondo);
+}
+
+h2 {
+  margin: 0 0 16px;
+  font-size: 1.5rem;
+}
+
+h3 {
+  margin: 0 0 8px;
+  font-size: 1.15rem;
+}
+
+a {
+  color: var(--color-principal);
+}
+
+/* Contenedor de todas las pantallas: centrado y con margen a los costados. */
+.contenido {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+/* ---------- 3. Barra de navegación ---------- */
+.barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  padding: 12px 16px;
+  background-color: var(--color-principal);
+}
+
+.barra-marca {
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #ffffff;
+  margin-right: auto;
+}
+
+.barra a {
+  color: #ffffff;
+  text-decoration: none;
+  padding: 4px 0;
+  border-bottom: 2px solid transparent;
+}
+
+/* NavLink le pone la clase "active" al link de la pantalla actual. */
+.barra a.active {
+  border-bottom-color: #ffffff;
+}
+
+.barra button {
+  background-color: transparent;
+  border: 1px solid #ffffff;
+  color: #ffffff;
+}
+
+/* ---------- 4. Botones ---------- */
+button {
+  font: inherit;
+  padding: 8px 14px;
+  border: none;
+  border-radius: var(--radio);
+  background-color: var(--color-principal);
+  color: #ffffff;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: var(--color-principal-oscuro);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ---------- 5. Formularios ---------- */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  margin-bottom: 24px;
+  background-color: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-weight: 600;
+}
+
+input,
+select {
+  font: inherit;
+  padding: 8px 10px;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  background-color: #ffffff;
+}
+
+input:focus,
+select:focus {
+  outline: 2px solid var(--color-principal);
+  outline-offset: 1px;
+}
+
+/* Login y Registro: formulario angosto y centrado. */
+.login,
+.registro {
+  max-width: 400px;
+  margin: 24px auto;
+}
+
+/* ---------- 6. Mensajes ---------- */
+.error,
+.exito,
+.aviso {
+  margin: 8px 0;
+  padding: 8px 12px;
+  border-radius: var(--radio);
+}
+
+.error {
+  color: var(--color-error);
+  background-color: var(--color-error-fondo);
+}
+
+.exito {
+  color: var(--color-exito);
+  background-color: var(--color-exito-fondo);
+}
+
+.aviso {
+  color: var(--color-aviso);
+  background-color: var(--color-aviso-fondo);
+}
+
+.nota {
+  color: var(--color-suave);
+  font-size: 0.9rem;
+}
+
+/* ---------- 7. Tarjetas (pedidos, paso del armado, resumen) ---------- */
+.tarjeta-pedido,
+.paso,
+.resumen-pedido {
+  padding: 16px;
+  margin-bottom: 16px;
+  background-color: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+}
+
+.tarjeta-pedido header {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--color-suave);
+}
+
+.estado {
+  font-weight: 700;
+  color: var(--color-principal);
+}
+
+.producto h4 {
+  margin: 12px 0 4px;
+}
+
+.producto ul,
+.resumen-pedido ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.total {
+  font-weight: 700;
+}
+
+/* Botones dentro de una tarjeta: uno al lado del otro y, si no entran, abajo. */
+.tarjeta-pedido button {
+  margin: 8px 8px 0 0;
+}
+
+.historial {
+  margin-top: 12px;
+  padding-left: 20px;
+  color: var(--color-suave);
+}
+
+/* ---------- 8. Armar hamburguesa ---------- */
+.armar {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.progreso {
+  color: var(--color-suave);
+  margin: 0 0 8px;
+}
+
+.paso ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Una fila por ingrediente: nombre y precio a la izquierda, − cantidad + a la derecha. */
+.selector-ingrediente {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-borde);
+}
+
+.selector-ingrediente:last-child {
+  border-bottom: none;
+}
+
+.selector-ingrediente .nombre {
+  flex: 1;
+  text-transform: capitalize;
+}
+
+.selector-ingrediente .precio {
+  color: var(--color-suave);
+}
+
+.cantidad {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cantidad span {
+  min-width: 20px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.cantidad button {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  font-size: 1.2rem;
+}
+
+.navegacion-pasos {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.navegacion-pasos button {
+  flex: 1;
+}
+
+.paso h3 {
+  text-transform: capitalize;
+}
+
+/* Cada hamburguesa del resumen, separada con una línea. */
+.resumen-pedido .producto {
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--color-borde);
+}
+
+/* "Quitar" como botón secundario: solo el borde, para que no compita con "Confirmar". */
+.resumen-pedido .producto button {
+  background-color: transparent;
+  color: var(--color-principal);
+  border: 1px solid var(--color-principal);
+  padding: 4px 10px;
+  font-size: 0.9rem;
+}
+
+/* "Confirmar pedido" (el hijo directo del resumen) ocupa todo el ancho. */
+.resumen-pedido > button {
+  width: 100%;
+  margin-top: 8px;
+}
+
+/* ---------- 9. Tablas (pantallas del admin) ---------- */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+}
+
+th,
+td {
+  padding: 8px 10px;
+  text-align: left;
+  border-bottom: 1px solid var(--color-borde);
+}
+
+th {
+  background-color: var(--color-fondo);
+  font-size: 0.9rem;
+  color: var(--color-suave);
+}
+
+td button {
+  margin: 2px 4px 2px 0;
+  padding: 6px 10px;
+  font-size: 0.9rem;
+}
+
+/* ---------- 10. Celular: la tabla se desliza de costado en vez de romper la pantalla ---------- */
+@media (max-width: 699px) {
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}
+
+/* ---------- 11. Pantallas anchas (desde 700px) ---------- */
+@media (min-width: 700px) {
+  .contenido {
+    padding: 24px;
+  }
+
+  /* Formularios del admin: los campos en dos columnas. */
+  .formulario-empleado,
+  .formulario-categoria,
+  .formulario-ingrediente {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  /* El título y los mensajes ocupan las dos columnas. */
+  .formulario-empleado > h3,
+  .formulario-empleado > p,
+  .formulario-categoria > h3,
+  .formulario-categoria > p,
+  .formulario-ingrediente > h3,
+  .formulario-ingrediente > p {
+    grid-column: 1 / -1;
+  }
+
+  /* Los botones, del tamaño de su texto (no estirados a lo ancho de la columna). */
+  .formulario-empleado > button,
+  .formulario-categoria > button,
+  .formulario-ingrediente > button {
+    justify-self: start;
+  }
+}
