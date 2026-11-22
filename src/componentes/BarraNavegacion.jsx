@@ -22,6 +22,7 @@ function BarraNavegacion() {
 
       {sesion.rol === 'administrador' && (
         <>
+          <NavLink to="/admin" end>Inicio</NavLink>
           <NavLink to="/admin/pedidos">Pedidos</NavLink>
           <NavLink to="/admin/usuarios">Usuarios</NavLink>
           <NavLink to="/admin/ingredientes">Ingredientes</NavLink>

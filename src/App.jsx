@@ -13,6 +13,7 @@ import AdminPedidos from './paginas/AdminPedidos';
 import AdminUsuarios from './paginas/AdminUsuarios';
 import AdminCategorias from './paginas/AdminCategorias';
 import AdminIngredientes from './paginas/AdminIngredientes';
+import AdminInicio from './paginas/AdminInicio';
 
 function App() {
   const sesion = useContext(SesionContexto);
@@ -58,6 +59,16 @@ function App() {
             element={
               <RutaProtegida rolesPermitidos={['cocinero']}>
                 <Cocina/>
+              </RutaProtegida>
+            }
+          />
+
+
+          <Route
+            path="/admin"
+            element={
+              <RutaProtegida rolesPermitidos={['administrador']}>
+                <AdminInicio />
               </RutaProtegida>
             }
           />

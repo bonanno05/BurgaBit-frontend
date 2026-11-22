@@ -7,7 +7,7 @@ export function inicioSegunRol(rol) {
     return '/cocina';
   }
   if (rol === 'administrador') {
-    return '/admin/pedidos';
+    return '/admin';
   }
   return '/login';
 }

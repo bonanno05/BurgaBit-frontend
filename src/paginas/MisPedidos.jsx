@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router';
 import { usePedidoConSesion } from '../contexto/usePedidoConSesion';
 import TarjetaPedido from '../componentes/TarjetaPedido';
 
@@ -7,6 +8,14 @@ function MisPedidos() {
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState('');
   const [idCancelando, setIdCancelando] = useState('');
+
+  // Si se llegó desde "Confirmar pedido", la navegación trae { pedidoConfirmado: true }.
+  const ubicacion = useLocation();
+  let vieneDeConfirmar = false;
+  if (ubicacion.state !== null && ubicacion.state.pedidoConfirmado === true) {
+    vieneDeConfirmar = true;
+  }
+  const [avisoConfirmado, setAvisoConfirmado] = useState(vieneDeConfirmar);
 
   const pedirConSesion = usePedidoConSesion();
 
@@ -32,6 +41,7 @@ function MisPedidos() {
     }
 
     setError('');
+    setAvisoConfirmado(false);
     setIdCancelando(id);
 
     try {
@@ -58,7 +68,11 @@ function MisPedidos() {
   return (
     <div className="mis-pedidos">
       <h2>Mis pedidos</h2>
-
+      {avisoConfirmado && (
+        <p className="exito">
+          ✅ ¡Pedido confirmado! Lo vas a ver acá abajo como Pendiente. Recargá la página para ver cuando la cocina lo empiece a preparar.
+        </p>
+      )}
       {error !== '' && <p className="error">{error}</p>}
 
       {pedidos.length === 0 && <p>Todavía no hiciste ningún pedido.</p>}

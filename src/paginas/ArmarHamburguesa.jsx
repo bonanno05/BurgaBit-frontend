@@ -19,6 +19,8 @@ function ArmarHamburguesa() {
   const pedirConSesion = usePedidoConSesion();
   const [enviando, setEnviando] = useState(false);
   const [errorPedido, setErrorPedido] = useState('');
+  // true: se ve el armador paso a paso. false: se ve la pantalla de "hamburguesa agregada".
+  const [armando, setArmando] = useState(true);
   const navegar = useNavigate();
 
   useEffect(function () {
@@ -168,6 +170,13 @@ function ArmarHamburguesa() {
     setProductos([...productos, nuevoProducto]);
     setSeleccion({});
     setPasoActual(0);
+    setArmando(false);
+  }
+
+  // Botón "Armar otra hamburguesa" de la pantalla intermedia: vuelve al paso 1.
+  function armarOtra() {
+    setArmando(true);
+    window.scrollTo(0, 0);
   }
 
   function quitarDelPedido(idProducto) {
@@ -203,7 +212,7 @@ function ArmarHamburguesa() {
     setErrorPedido('');
     try {
       await pedirConSesion('/cliente', 'POST', armarCuerpoDelPedido());
-      navegar('/mis-pedidos');
+      navegar('/mis-pedidos', { state: { pedidoConfirmado: true } });
     } catch (fallo) {
       setErrorPedido(fallo.message);
       setEnviando(false);
@@ -233,6 +242,35 @@ function ArmarHamburguesa() {
 
     if (categorias.length === 0) {
     return <p>Todavía no hay pasos cargados en el menú.</p>;
+  }
+
+  // El error y el botón de confirmar se usan en las dos vistas: se guardan en una variable (el JSX es un valor).
+  const botonConfirmar = (
+    <>
+      {errorPedido !== '' && <p className="error">{errorPedido}</p>}
+      <button type="button" onClick={confirmarPedido} disabled={enviando}>
+        {enviando ? 'Enviando pedido…' : 'Confirmar pedido'}
+      </button>
+    </>
+  );
+
+  // Pantalla intermedia: después de agregar una hamburguesa.
+  // Si se quitan todas, productos queda vacío y se vuelve solo al armador.
+  if (armando === false && productos.length > 0) {
+    return (
+      <div className="armar">
+        <p className="exito">✅ ¡Hamburguesa agregada a tu pedido!</p>
+        <p>Podés confirmar el pedido o armar otra hamburguesa para sumarla.</p>
+
+        <ResumenPedido productos={productos} alQuitar={quitarDelPedido}>
+          {botonConfirmar}
+        </ResumenPedido>
+
+        <button type="button" className="boton-secundario" onClick={armarOtra} disabled={enviando}>
+          Armar otra hamburguesa
+        </button>
+      </div>
+    );
   }
 
   const categoria = categorias[pasoActual];
@@ -300,10 +338,7 @@ function ArmarHamburguesa() {
       <p className="nota">Los precios son estimados: el final lo calcula el sistema al confirmar el pedido.</p>
 
       <ResumenPedido productos={productos} alQuitar={quitarDelPedido}>
-        {errorPedido !== '' && <p className="error">{errorPedido}</p>}
-        <button type="button" onClick={confirmarPedido} disabled={enviando}>
-          {enviando ? 'Enviando pedido…' : 'Confirmar pedido'}
-        </button>
+        {botonConfirmar}
       </ResumenPedido>
     </div>
   );

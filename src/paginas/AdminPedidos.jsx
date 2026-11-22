@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { usePedidoConSesion } from '../contexto/usePedidoConSesion';
 import TarjetaPedido from '../componentes/TarjetaPedido';
 import HistorialEstados from '../componentes/HistorialEstados';
@@ -8,7 +8,8 @@ const ESTADOS = ['Pendiente', 'En preparación', 'Lista para retirar', 'Entregad
 
 function AdminPedidos() {
   const [pedidos, setPedidos] = useState([]);
-  const [cargando, setCargando] = useState(true);
+  const [cargando, setCargando] = useState(false);
+  const [buscado, setBuscado] = useState(false);
   const [error, setError] = useState('');
   const [filtro, setFiltro] = useState('');
   const [idAbierto, setIdAbierto] = useState('');
@@ -17,45 +18,34 @@ function AdminPedidos() {
 
   const pedirConSesion = usePedidoConSesion();
 
-  // Trae los pedidos cada vez que cambia el filtro (todos, o solo los de un estado).
-  useEffect(function () {
-    // Si el filtro cambia antes de que llegue la respuesta, esa respuesta vieja se ignora.
-    let respuestaVieja = false;
-
-    async function cargarPedidos() {
-      let ruta = '/admin';
-      if (filtro !== '') {
-        ruta = '/admin?estado=' + encodeURIComponent(filtro);
-      }
-
-      try {
-        const datos = await pedirConSesion(ruta, 'GET');
-        if (respuestaVieja === false) {
-          setPedidos(datos);
-        }
-      } catch (fallo) {
-        if (respuestaVieja === false) {
-          setError(fallo.message);
-        }
-      } finally {
-        if (respuestaVieja === false) {
-          setCargando(false);
-        }
-      }
+  // Los pedidos se piden recién cuando el admin toca "Buscar" (no al abrir la pantalla).
+  async function buscar() {
+    let ruta = '/admin';
+    if (filtro !== '') {
+      ruta = '/admin?estado=' + encodeURIComponent(filtro);
     }
 
-    cargarPedidos();
+    setError('');
+    setIdAbierto('');
+    setDetalle(null);
+    setCargando(true);
 
-    // Limpieza: React la ejecuta antes de volver a correr el efecto (cuando cambia el filtro).
-    return function () {
-      respuestaVieja = true;
-    };
-  }, [pedirConSesion, filtro]);
+    try {
+      const datos = await pedirConSesion(ruta, 'GET');
+      setPedidos(datos);
+      setBuscado(true);
+    } catch (fallo) {
+      setError(fallo.message);
+    } finally {
+      setCargando(false);
+    }
+  }
 
+  // Al cambiar el estado elegido se borra el resultado anterior, para que no quede una lista que no corresponde.
   function cambiarFiltro(evento) {
     setFiltro(evento.target.value);
-    setCargando(true);
-    setError('');
+    setPedidos([]);
+    setBuscado(false);
     setIdAbierto('');
     setDetalle(null);
   }
@@ -88,27 +78,35 @@ function AdminPedidos() {
     <div className="admin-pedidos">
       <h2>Pedidos</h2>
 
-      <label>
-        Estado:{' '}
-        <select value={filtro} onChange={cambiarFiltro}>
-          <option value="">Todos</option>
-          {ESTADOS.map(function (estado) {
-            return (
-              <option key={estado} value={estado}>
-                {estado}
-              </option>
-            );
-          })}
-        </select>
-      </label>
+      <div className="filtro">
+        <label>
+          Estado
+          <select value={filtro} onChange={cambiarFiltro}>
+            <option value="">Todos</option>
+            {ESTADOS.map(function (estado) {
+              return (
+                <option key={estado} value={estado}>
+                  {estado}
+                </option>
+              );
+            })}
+          </select>
+        </label>
+
+        <button type="button" onClick={buscar} disabled={cargando}>
+          {cargando ? 'Buscando…' : 'Buscar'}
+        </button>
+      </div>
 
       {error !== '' && <p className="error">{error}</p>}
 
-      {cargando && <p>Cargando los pedidos…</p>}
+      {buscado === false && cargando === false && (
+        <p className="nota">Elegí un estado y tocá "Buscar" para ver los pedidos.</p>
+      )}
 
-      {cargando === false && pedidos.length === 0 && <p>No hay pedidos para mostrar.</p>}
+      {buscado && pedidos.length === 0 && <p>No hay pedidos para mostrar.</p>}
 
-      {cargando === false && pedidos.map(function (pedido) {
+      {pedidos.map(function (pedido) {
         const abierto = idAbierto === pedido._id;
 
         return (
