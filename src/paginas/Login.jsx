@@ -2,6 +2,7 @@ import { iniciarSesion } from '../servicios/authServicio'; //importa funcion de 
 import { useState, useContext } from 'react';
 import { SesionContexto } from '../contexto/SesionContexto';
 import { Link } from 'react-router';
+import { esEmailValido } from '../utilidades/validaciones';
 
 function Login() { //componente
 
@@ -28,8 +29,7 @@ function Login() { //componente
       return;
     }
 
-    const formatoEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (formatoEmail.test(email.trim()) === false) {
+    if (esEmailValido(email) === false) {
       setError('El email no tiene un formato válido.');
       return;
     }

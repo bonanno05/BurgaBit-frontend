@@ -1,14 +1,6 @@
 import { useState } from 'react';
 import { usePedidoConSesion } from '../contexto/usePedidoConSesion';
-
-// true si el texto es un número entero mayor o igual a "desde" (ej.: "2" con desde 1 → true; "1.5" o "" → false).
-function esEnteroDesde(texto, desde) {
-  if (texto.trim() === '') {
-    return false;
-  }
-  const numero = Number(texto);
-  return Number.isInteger(numero) && numero >= desde;
-}
+import { esEnteroDesde } from '../utilidades/validaciones';
 
 // Formulario para crear una categoría (props.categoria es null) o para editarla (props.categoria es la categoría).
 function FormularioCategoria(props) {

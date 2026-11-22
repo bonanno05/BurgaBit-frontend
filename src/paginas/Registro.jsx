@@ -2,6 +2,7 @@ import { useState, useContext } from 'react';
 import { Link } from 'react-router';
 import { SesionContexto } from '../contexto/SesionContexto';
 import { registrarse, iniciarSesion } from '../servicios/authServicio';
+import { esEmailValido } from '../utilidades/validaciones';
 
 function Registro() {
   const [nombre, setNombre] = useState('');
@@ -52,8 +53,7 @@ function Registro() {
       return;
     }
 
-    const formatoEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (formatoEmail.test(email.trim()) === false) {
+      if (esEmailValido(email) === false) {
       setError('El email no tiene un formato válido.');
       return;
     }

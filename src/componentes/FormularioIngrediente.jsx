@@ -1,23 +1,6 @@
 import { useState } from 'react';
 import { usePedidoConSesion } from '../contexto/usePedidoConSesion';
-
-// true si el texto es un número (puede tener decimales) mayor o igual a 0.
-function esNumeroPositivo(texto) {
-  if (texto.trim() === '') {
-    return false;
-  }
-  const numero = Number(texto);
-  return Number.isNaN(numero) === false && numero >= 0;
-}
-
-// true si el texto es un número entero mayor o igual a 0.
-function esEnteroPositivo(texto) {
-  if (texto.trim() === '') {
-    return false;
-  }
-  const numero = Number(texto);
-  return Number.isInteger(numero) && numero >= 0;
-}
+import { esEnteroDesde, esNumeroDesdeCero } from '../utilidades/validaciones';
 
 // Formulario para crear un ingrediente (props.ingrediente es null) o para editarlo.
 // Al editar no se puede cambiar la categoría: el backend no lo permite.
@@ -69,11 +52,11 @@ function FormularioIngrediente(props) {
       setError('Ya existe un ingrediente con ese nombre');
       return;
     }
-    if (esNumeroPositivo(precio) === false) {
+    if (esNumeroDesdeCero(precio) === false) {
       setError('El precio tiene que ser un número desde 0');
       return;
     }
-    if (esEnteroPositivo(cantidad) === false) {
+    if (esEnteroDesde(cantidad, 0) === false) {
       setError('El stock tiene que ser un número entero desde 0');
       return;
     }
