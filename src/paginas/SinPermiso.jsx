@@ -10,8 +10,8 @@ function SinPermiso() {
   const inicio = inicioSegunRol(sesion.rol);
 
   return (
-    <div className="sin-permiso">
-      <p className="sin-permiso-codigo">403</p>
+    <div className="pagina-error">
+      <p className="pagina-error-codigo">403</p>
       <h2>No tenés permiso para entrar acá</h2>
       <p>Esta sección no está disponible para tu cuenta.</p>
       <Link to={inicio}>Volver al inicio</Link>
