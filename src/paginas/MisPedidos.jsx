@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { useLocation } from 'react-router';
+import { useLocation, Link } from 'react-router';
 import { usePedidoConSesion } from '../contexto/usePedidoConSesion';
 import TarjetaPedido from '../componentes/TarjetaPedido';
+import hamburguesaCerca from '../assets/hamburguesa-cerca.webp';
 
 function MisPedidos() {
   const [pedidos, setPedidos] = useState([]);
@@ -75,7 +76,13 @@ function MisPedidos() {
       )}
       {error !== '' && <p className="error">{error}</p>}
 
-      {pedidos.length === 0 && <p>Todavía no hiciste ningún pedido.</p>}
+      {pedidos.length === 0 && (
+        <div className="sin-pedidos">
+          <img src={hamburguesaCerca} alt="" />
+          <p>Todavía no hiciste ningún pedido.</p>
+          <Link to="/armar">Armar mi primera hamburguesa</Link>
+        </div>
+      )}
 
       {pedidos.map(function (pedido) {
         return (

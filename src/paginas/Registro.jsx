@@ -85,35 +85,39 @@ function Registro() {
   }
 
   return (
-    <div className="registro">
-      <h2>Crear cuenta</h2>
+    <div className="pantalla-sesion">
+      <div className="sesion-foto"></div>
 
-      <form onSubmit={enviarFormulario} noValidate>
-        <label htmlFor="nombre">Nombre</label>
-        <input id="nombre" type="text" value={nombre} onChange={cambiarNombre} />
+      <div className="registro">
+        <h2>Crear cuenta</h2>
 
-        <label htmlFor="apellido">Apellido</label>
-        <input id="apellido" type="text" value={apellido} onChange={cambiarApellido} />
+        <form onSubmit={enviarFormulario} noValidate>
+          <label htmlFor="nombre">Nombre</label>
+          <input id="nombre" type="text" value={nombre} onChange={cambiarNombre} />
 
-        <label htmlFor="email">Email</label>
-        <input id="email" type="email" value={email} onChange={cambiarEmail} />
+          <label htmlFor="apellido">Apellido</label>
+          <input id="apellido" type="text" value={apellido} onChange={cambiarApellido} />
 
-        <label htmlFor="password">Contraseña (mínimo 8 caracteres)</label>
-        <input id="password" type="password" value={password} onChange={cambiarPassword} />
+          <label htmlFor="email">Email</label>
+          <input id="email" type="email" value={email} onChange={cambiarEmail} />
 
-        <label htmlFor="repetirPassword">Repetir contraseña</label>
-        <input id="repetirPassword" type="password" value={repetirPassword} onChange={cambiarRepetirPassword} />
+          <label htmlFor="password">Contraseña (mínimo 8 caracteres)</label>
+          <input id="password" type="password" value={password} onChange={cambiarPassword} />
 
-        {error !== '' && <p className="error">{error}</p>}
+          <label htmlFor="repetirPassword">Repetir contraseña</label>
+          <input id="repetirPassword" type="password" value={repetirPassword} onChange={cambiarRepetirPassword} />
 
-        <button type="submit" disabled={cargando}>
-          {cargando ? 'Creando cuenta…' : 'Crear cuenta'}
-        </button>
-      </form>
+          {error !== '' && <p className="error">{error}</p>}
 
-      <p>
-        ¿Ya tenés cuenta? <Link to="/login">Iniciá sesión</Link>
-      </p>
+          <button type="submit" disabled={cargando}>
+            {cargando ? 'Creando cuenta…' : 'Crear cuenta'}
+          </button>
+        </form>
+
+        <p>
+          ¿Ya tenés cuenta? <Link to="/login">Iniciá sesión</Link>
+        </p>
+      </div>
     </div>
   );
 }

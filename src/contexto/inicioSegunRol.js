@@ -9,5 +9,5 @@ export function inicioSegunRol(rol) {
   if (rol === 'administrador') {
     return '/admin';
   }
-  return '/login';
+  return '/bienvenida';
 }

@@ -14,6 +14,7 @@ import AdminUsuarios from './paginas/AdminUsuarios';
 import AdminCategorias from './paginas/AdminCategorias';
 import AdminIngredientes from './paginas/AdminIngredientes';
 import AdminInicio from './paginas/AdminInicio';
+import Bienvenida from './paginas/Bienvenida';
 
 function App() {
   const sesion = useContext(SesionContexto);
@@ -32,6 +33,12 @@ function App() {
             path="/login"
             element={haySesion ? <Navigate to={inicio} replace /> : <Login />}
           />
+
+          <Route
+            path="/bienvenida"
+            element={haySesion ? <Navigate to={inicio} replace /> : <Bienvenida />}
+          />
+          
           <Route
             path="/registro"
             element={haySesion ? <Navigate to={inicio} replace /> : <Registro />}

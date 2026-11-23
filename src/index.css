@@ -6,13 +6,15 @@
 
 /* ---------- 1. Colores y medidas que se repiten (variables) ---------- */
 :root {
-  --color-fondo: #fdf8f3;
-  --color-superficie: #ffffff;
-  --color-texto: #2b2118;
-  --color-suave: #7a6a5c;
-  --color-borde: #e8ddd2;
-  --color-principal: #c2410c;
-  --color-principal-oscuro: #9a3412;
+  --color-fondo: #1c0a2b;
+  --color-superficie: #2a1040;
+  --color-texto: #f7f0fc;
+  --color-suave: #c3add6;
+  --color-borde: #47265f;
+  --color-principal: #a21caf;
+  --color-principal-oscuro: #86198f;
+  --color-acento: #e879f9;
+  --color-destacado: #fbbf24;
   --color-error: #b91c1c;
   --color-error-fondo: #fef2f2;
   --color-exito: #15803d;
@@ -21,7 +23,7 @@
   --color-aviso-fondo: #fefce8;
 
   --radio: 10px;
-  --sombra: 0 1px 3px rgba(43, 33, 24, 0.12);
+  --sombra: 0 2px 10px rgba(0, 0, 0, 0.4);
 }
 
 /* ---------- 2. Base ---------- */
@@ -49,7 +51,7 @@ h3 {
 }
 
 a {
-  color: var(--color-principal);
+  color: var(--color-acento);
 }
 
 /* Contenedor de todas las pantallas: centrado y con margen a los costados. */
@@ -66,7 +68,7 @@ a {
   align-items: center;
   gap: 8px 16px;
   padding: 12px 16px;
-  background-color: var(--color-principal);
+  background-color: var(--color-acento);
 }
 
 .barra-marca {
@@ -100,7 +102,7 @@ button {
   padding: 8px 14px;
   border: none;
   border-radius: var(--radio);
-  background-color: var(--color-principal);
+  background-color: var(--color-acento);
   color: #ffffff;
   cursor: pointer;
 }
@@ -140,12 +142,13 @@ select {
   padding: 8px 10px;
   border: 1px solid var(--color-borde);
   border-radius: var(--radio);
-  background-color: #ffffff;
+  background-color: var(--color-fondo);
+  color: var(--color-texto);
 }
 
 input:focus,
 select:focus {
-  outline: 2px solid var(--color-principal);
+  outline: 2px solid var(--color-acento);
   outline-offset: 1px;
 }
 
@@ -206,7 +209,7 @@ select:focus {
 
 .estado {
   font-weight: 700;
-  color: var(--color-principal);
+  color: var(--color-acento);
 }
 
 .producto h4 {
@@ -220,6 +223,7 @@ select:focus {
 }
 
 .total {
+  color: var(--color-destacado);
   font-weight: 700;
 }
 
@@ -315,8 +319,8 @@ select:focus {
 /* "Quitar" como botón secundario: solo el borde, para que no compita con "Confirmar". */
 .resumen-pedido .producto button {
   background-color: transparent;
-  color: var(--color-principal);
-  border: 1px solid var(--color-principal);
+  color: var(--color-acento);
+  border: 1px solid var(--color-acento);
   padding: 4px 10px;
   font-size: 0.9rem;
 }
@@ -401,8 +405,8 @@ td button {
 .boton-secundario {
   width: 100%;
   background-color: transparent;
-  color: var(--color-principal);
-  border: 1px solid var(--color-principal);
+  color: var(--color-acento);
+  border: 1px solid var(--color-acento);
 }
 
 .boton-secundario:hover {
@@ -438,16 +442,292 @@ td button {
 }
 
 .acceso strong {
-  color: var(--color-principal);
+  color: var(--color-acento);
   font-size: 1.1rem;
 }
 
 .acceso:hover {
-  border-color: var(--color-principal);
+  border-color: var(--color-acento);
 }
 
 @media (min-width: 700px) {
   .accesos {
     grid-template-columns: 1fr 1fr;
   }
+}
+
+/* ---------- 12. Pantalla de bienvenida ---------- */
+
+
+/* Ocupa toda la ventana (position: fixed + inset: 0), aunque esté adentro del contenedor de 960px.
+   Fondo claro con dos manchas de color difuminadas en las esquinas. */
+.bienvenida {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  overflow: hidden;
+  text-align: center;
+  background-color: #fffaf5;
+  background-image:
+  radial-gradient(circle at 15% 20%, rgba(251, 146, 60, 0.35), transparent 40%),
+  radial-gradient(circle at 85% 80%, rgba(250, 204, 21, 0.3), transparent 40%);
+}
+
+/* El texto y el botón entran subiendo al abrir la página. */
+.bienvenida-contenido {
+  animation: aparecer 0.8s ease-out;
+}
+
+/* Caja del título: los rayos se ubican respecto de ella (position: relative). */
+.bienvenida-marca {
+  position: relative;
+  margin-bottom: 12px;
+}
+
+/* Los rayos: rayitas finas en abanico, centradas detrás del título, que giran muy despacio
+   y se esfuman hacia afuera (mask-image). */
+.bienvenida-rayos {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(720px, 170vw);
+  aspect-ratio: 1;
+  background: repeating-conic-gradient(rgba(249, 115, 22, 0.45) 0deg 1.5deg, transparent 1.5deg 10deg);
+  -webkit-mask-image: radial-gradient(circle, transparent 12%, #000000 22%, transparent 62%);
+  mask-image: radial-gradient(circle, transparent 12%, #000000 22%, transparent 62%);
+  transform: translate(-50%, -50%);
+  animation: girar 60s linear infinite;
+}
+
+/* La hamburguesa: chiquita, en el centro del sol, detrás del título y girando.
+   Va semitransparente para que el título se siga leyendo. */
+.bienvenida-hamburguesa {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: clamp(110px, 26vw, 180px);
+  opacity: 0.45;
+  transform: translate(-50%, -50%);
+  animation: girar 20s linear infinite;
+}
+
+/* position: relative pone el título por encima de los rayos (va después en el HTML). */
+.bienvenida-titulo {
+  position: relative;
+  margin: 0;
+  font-size: clamp(2.2rem, 8vw, 4.5rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: #111111;
+}
+
+.bienvenida-texto {
+  position: relative;
+  margin: 0 0 28px;
+  font-size: 1.15rem;
+  color: #57534e;
+}
+
+.bienvenida-boton {
+  position: relative;
+  display: inline-block;
+  padding: 14px 40px;
+  border-radius: 999px;
+  background-color: #111111;
+  color: #ffffff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  transition: transform 0.15s, background-color 0.15s;
+}
+
+.bienvenida-boton:hover {
+  background-color: var(--color-acento);
+  transform: translateY(-2px);
+}
+
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Gira manteniendo el centrado (el translate tiene que estar en los dos extremos). */
+@keyframes girar {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+/* Si la persona pidió en su sistema "reducir el movimiento", no se anima nada. */
+@media (prefers-reduced-motion: reduce) {
+  .bienvenida-contenido,
+  .bienvenida-rayos,
+  .bienvenida-hamburguesa {
+    animation: none;
+  }
+}
+
+/* ---------- 13. Banner de Armar hamburguesa ---------- */
+
+/* Franja con la foto de fondo. background-image tiene dos capas separadas por coma:
+   la primera (el degradado violeta) queda encima de la segunda (la foto).
+   El degradado es oscuro a la izquierda, donde va el texto, y transparente a la derecha,
+   donde está la hamburguesa. */
+.banner {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 180px;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: var(--radio);
+  overflow: hidden;
+  background-image:
+    linear-gradient(to right, rgba(28, 10, 43, 0.95) 35%, rgba(28, 10, 43, 0) 75%),
+    url('./assets/banner-armar.webp');
+  background-size: cover;
+  background-position: center;
+  box-shadow: var(--sombra);
+}
+
+.banner h2 {
+  margin: 0;
+  font-size: clamp(1.6rem, 6vw, 2.2rem);
+  color: #ffffff;
+}
+
+.banner p {
+  margin: 4px 0 0;
+  color: var(--color-suave);
+}
+
+@media (min-width: 700px) {
+  .banner {
+    min-height: 240px;
+    padding: 28px;
+  }
+}
+
+/* ---------- 14. Login y Registro con foto ---------- */
+
+/* Una sola tarjeta con dos partes: la foto y el formulario.
+   En celular, una columna (la foto arriba). Desde 700px, dos columnas iguales. */
+.pantalla-sesion {
+  display: grid;
+  max-width: 880px;
+  margin: 24px auto;
+  overflow: hidden;
+  background-color: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+}
+
+/* Div vacío que muestra la foto. El degradado termina en el color de la tarjeta
+   (#2a1040, el mismo que --color-superficie) para que la foto se funda con el formulario. */
+.sesion-foto {
+  min-height: 160px;
+  background-image:
+    linear-gradient(to bottom, rgba(42, 16, 64, 0) 50%, rgba(42, 16, 64, 1)),
+    url('./assets/hamburguesa-capas.webp');
+  background-size: cover;
+  background-position: center 35%;
+}
+
+/* Adentro de la tarjeta, el Login y el Registro ya no necesitan su ancho ni su margen propios. */
+.pantalla-sesion .login,
+.pantalla-sesion .registro {
+  max-width: none;
+  margin: 0;
+  padding: 24px;
+}
+
+/* El form tiene su propia tarjeta (sección 5): acá se la sacamos para que no quede una tarjeta adentro de otra. */
+.pantalla-sesion form {
+  padding: 0;
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+@media (min-width: 700px) {
+  .pantalla-sesion {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  /* En compu la foto va a la izquierda: el degradado va hacia la derecha, donde está el formulario. */
+  .sesion-foto {
+    min-height: 480px;
+    background-image:
+      linear-gradient(to right, rgba(42, 16, 64, 0) 60%, rgba(42, 16, 64, 1)),
+      url('./assets/hamburguesa-capas.webp');
+    background-position: center;
+  }
+
+  /* El formulario queda centrado a lo alto de la tarjeta. */
+  .pantalla-sesion .login,
+  .pantalla-sesion .registro {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 40px;
+  }
+}
+
+/* ---------- 15. Mis pedidos vacío ---------- */
+
+/* Tarjeta con la foto, el texto y el link, uno abajo del otro y centrados. */
+.sin-pedidos {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 32px 16px;
+  text-align: center;
+  background-color: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+}
+
+/* height: auto mantiene la proporción de la foto. */
+.sin-pedidos img {
+  width: 160px;
+  height: auto;
+  border-radius: var(--radio);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+.sin-pedidos p {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+/* El link con forma de botón. */
+.sin-pedidos a {
+  display: inline-block;
+  padding: 10px 20px;
+  border-radius: var(--radio);
+  background-color: var(--color-principal);
+  color: #ffffff;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.sin-pedidos a:hover {
+  background-color: var(--color-principal-oscuro);
 }

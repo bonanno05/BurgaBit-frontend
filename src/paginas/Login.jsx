@@ -61,22 +61,26 @@ function Login() { //componente
 
 
   return (
-    <div className="login"> 
-      <h2>Iniciar sesión</h2>
+    <div className="pantalla-sesion">
+      <div className="sesion-foto"></div>
 
-      <form onSubmit={enviarFormulario} noValidate>
-        <label htmlFor="email">Email</label>
-        <input id="email" type="email" value={email} onChange={cambiarEmail}/>
-        <label htmlFor="password">Contraseña</label>
-        <input id="password" type="password" value={password} onChange={cambiarPassword}/>
+        <div className="login"> 
+          <h2>Iniciar sesión</h2>
 
-        {error !== '' && <p className='error'>{error}</p>} {/*hace aparecer el error en la pantalla*/}
-        
-        <button type="submit" disabled={cargando}>{cargando ? 'Ingresando' : 'Ingresar' }</button>
-      </form>
-      <p>
-        ¿No tenés cuenta? <Link to="/registro">Registrate</Link>
-      </p>
+          <form onSubmit={enviarFormulario} noValidate>
+            <label htmlFor="email">Email</label>
+            <input id="email" type="email" value={email} onChange={cambiarEmail}/>
+            <label htmlFor="password">Contraseña</label>
+            <input id="password" type="password" value={password} onChange={cambiarPassword}/>
+
+            {error !== '' && <p className='error'>{error}</p>} {/*hace aparecer el error en la pantalla*/}
+            
+            <button type="submit" disabled={cargando}>{cargando ? 'Ingresando' : 'Ingresar' }</button>
+          </form>
+          <p>
+            ¿No tenés cuenta? <Link to="/registro">Registrate</Link>
+          </p>
+        </div>
     </div>
   );
 }

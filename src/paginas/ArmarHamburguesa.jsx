@@ -282,7 +282,10 @@ function ArmarHamburguesa() {
 
   return (
     <div className="armar">
-      <h2>Armá tu hamburguesa</h2>
+      <div className="banner">
+        <h2>Armá tu hamburguesa</h2>
+        <p>Elegí cada ingrediente, paso a paso.</p>
+      </div>
 
       <p className="progreso">
         Paso {pasoActual + 1} de {categorias.length}
