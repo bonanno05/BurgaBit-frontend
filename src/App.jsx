@@ -15,6 +15,7 @@ import AdminCategorias from './paginas/AdminCategorias';
 import AdminIngredientes from './paginas/AdminIngredientes';
 import AdminInicio from './paginas/AdminInicio';
 import Bienvenida from './paginas/Bienvenida';
+import NoEncontrado from './paginas/NoEncontrado';
 
 function App() {
   const sesion = useContext(SesionContexto);
@@ -113,7 +114,7 @@ function App() {
             }
           />
 
-          <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path="*" element={<NoEncontrado />} />
         </Routes>
       </main>
     </>

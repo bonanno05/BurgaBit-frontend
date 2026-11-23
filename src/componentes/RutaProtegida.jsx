@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import { Navigate } from 'react-router';
 import { SesionContexto } from '../contexto/SesionContexto';
-import { inicioSegunRol } from '../contexto/inicioSegunRol';
+import SinPermiso from '../paginas/SinPermiso';
 
 function RutaProtegida(props) {
   const sesion = useContext(SesionContexto);
@@ -11,7 +11,7 @@ function RutaProtegida(props) {
   }
 
   if (props.rolesPermitidos.includes(sesion.rol) === false) {
-    return <Navigate to={inicioSegunRol(sesion.rol)} replace />;
+        return <SinPermiso/>;
   }
 
   return props.children;
