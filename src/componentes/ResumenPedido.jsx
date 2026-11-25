@@ -1,4 +1,5 @@
 import { formatearPrecio } from '../utilidades/formato';
+import DibujoHamburguesa from './DibujoHamburguesa';
 
 // Lista de hamburguesas ya armadas, con su precio estimado y el total.
 // No guarda estado: los productos los maneja la página y llegan por props.
@@ -18,21 +19,28 @@ function ResumenPedido(props) {
 
       {props.productos.map(function (producto, posicion) {
         return (
-          <div key={producto.id} className="producto">
-            <h4>Hamburguesa {posicion + 1}</h4>
-            <ul>
-              {producto.items.map(function (item) {
-                return (
-                  <li key={item.ingrediente}>
-                    {item.cantidad} x {item.nombre}
-                  </li>
-                );
-              })}
-            </ul>
-            <p>{formatearPrecio(producto.subtotalEstimado)}</p>
-            <button type="button" onClick={function () { props.alQuitar(producto.id); }}>
-              Quitar
-            </button>
+          <div key={producto.id} className="producto producto-con-dibujo">
+            {/* Los items también traen nombre y cantidad, así que sirven tal cual para el dibujo. */}
+            <div className="producto-dibujo">
+              <DibujoHamburguesa ingredientes={producto.items} chica={true} />
+            </div>
+
+            <div className="producto-detalle">
+              <h4>Hamburguesa {posicion + 1}</h4>
+              <ul>
+                {producto.items.map(function (item) {
+                  return (
+                    <li key={item.ingrediente}>
+                      {item.cantidad} x {item.nombre}
+                    </li>
+                  );
+                })}
+              </ul>
+              <p>{formatearPrecio(producto.subtotalEstimado)}</p>
+              <button type="button" onClick={function () { props.alQuitar(producto.id); }}>
+                Quitar
+              </button>
+            </div>
           </div>
         );
       })}

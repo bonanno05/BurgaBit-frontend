@@ -4,6 +4,7 @@ import { usePedidoConSesion } from '../contexto/usePedidoConSesion';
 import { formatearPrecio } from '../utilidades/formato';
 import SelectorIngrediente from '../componentes/SelectorIngrediente';
 import ResumenPedido from '../componentes/ResumenPedido';
+import DibujoHamburguesa from '../componentes/DibujoHamburguesa';
 
 // La misma regla que MAX_POR_INGREDIENTE en clienteControlador.js del backend.
 const MAXIMO_POR_INGREDIENTE = 3;
@@ -128,6 +129,18 @@ function ArmarHamburguesa() {
       total = total + ingrediente.precio * cantidadElegida(ingrediente._id);
     }
     return total;
+  }
+
+  // Lo que lleva la hamburguesa, en el formato que pide DibujoHamburguesa.
+  function ingredientesElegidos() {
+    const lista = [];
+    for (const ingrediente of ingredientes) {
+      const cantidad = cantidadElegida(ingrediente._id);
+      if (cantidad > 0) {
+        lista.push({ nombre: ingrediente.nombre, cantidad: cantidad });
+      }
+    }
+    return lista;
   }
 
     // La hamburguesa está completa si tiene al menos un ingrediente y cumple el mínimo de todas las categorías.
@@ -287,58 +300,76 @@ function ArmarHamburguesa() {
         <p>Elegí cada ingrediente, paso a paso.</p>
       </div>
 
-      <p className="progreso">
-        Paso {pasoActual + 1} de {categorias.length}
-      </p>
+      {/* En compu: menú a la izquierda y recuadro de la hamburguesa a la derecha.
+      En celular: una sola columna y el recuadro pegado abajo. */}
+      <div className="armar-columnas">
+        <div className="armar-menu">
+          <p className="progreso">
+            Paso {pasoActual + 1} de {categorias.length}
+          </p>
 
-      <section className="paso">
-        <h3>{categoria.nombre}</h3>
-        <p>
-          Elegí entre {categoria.minimo} y {categoria.maximo}. Llevás {elegidos}.
-        </p>
+          <section className="paso">
+            <h3>{categoria.nombre}</h3>
+            <p>
+              Elegí entre {categoria.minimo} y {categoria.maximo}. Llevás {elegidos}.
+            </p>
 
-        {cumpleMinimo === false && (
-          <p className="aviso">Te falta elegir al menos {categoria.minimo - elegidos}.</p>
-        )}
+            {cumpleMinimo === false && (
+              <p className="aviso">Te falta elegir al menos {categoria.minimo - elegidos}.</p>
+            )}
 
-        {opciones.length === 0 && <p>No hay ingredientes disponibles en este paso.</p>}
+            {opciones.length === 0 && <p>No hay ingredientes disponibles en este paso.</p>}
 
-        <ul>
-          {opciones.map(function (ingrediente) {
-            return (
-              <SelectorIngrediente
-                key={ingrediente._id}
-                ingrediente={ingrediente}
-                cantidad={cantidadElegida(ingrediente._id)}
-                puedeSumar={puedeSumar(ingrediente)}
-                alSumar={function () { sumar(ingrediente); }}
-                alRestar={function () { restar(ingrediente); }}
-              />
-            );
-          })}
-        </ul>
-      </section>
+            <ul>
+              {opciones.map(function (ingrediente) {
+                return (
+                  <SelectorIngrediente
+                    key={ingrediente._id}
+                    ingrediente={ingrediente}
+                    cantidad={cantidadElegida(ingrediente._id)}
+                    puedeSumar={puedeSumar(ingrediente)}
+                    alSumar={function () { sumar(ingrediente); }}
+                    alRestar={function () { restar(ingrediente); }}
+                  />
+                );
+              })}
+            </ul>
+          </section>
 
-      <div className="navegacion-pasos">
-        <button type="button" onClick={irAlAnterior} disabled={esElPrimero}>
-          Anterior
-        </button>
+          <div className="navegacion-pasos">
+            <button type="button" onClick={irAlAnterior} disabled={esElPrimero}>
+              Anterior
+            </button>
 
-        {esElUltimo === false && (
-          <button type="button" onClick={irAlSiguiente} disabled={cumpleMinimo === false}>
-            Siguiente
-          </button>
-        )}
+            {esElUltimo === false && (
+              <button type="button" onClick={irAlSiguiente} disabled={cumpleMinimo === false}>
+                Siguiente
+              </button>
+            )}
+          </div>
 
-        {esElUltimo && (
-          <button type="button" onClick={agregarAlPedido} disabled={hamburguesaCompleta() === false}>
+          <p className="nota">Los precios son estimados: el final lo calcula el sistema al confirmar el pedido.</p>
+        </div>
+
+        <aside className="armar-resumen">
+          <DibujoHamburguesa ingredientes={ingredientesElegidos()} />
+
+          <div className="armar-resumen-texto">
+            <h3>Tu hamburguesa</h3>
+            <p className="total">{formatearPrecio(precioEstimado())}</p>
+          </div>
+
+          <button
+            type="button"
+            className="boton-dorado"
+            onClick={agregarAlPedido}
+            disabled={hamburguesaCompleta() === false}
+          >
             Agregar al pedido
           </button>
-        )}
+        </aside>
       </div>
 
-      <p className="total">Esta hamburguesa: {formatearPrecio(precioEstimado())}</p>
-      <p className="nota">Los precios son estimados: el final lo calcula el sistema al confirmar el pedido.</p>
 
       <ResumenPedido productos={productos} alQuitar={quitarDelPedido}>
         {botonConfirmar}

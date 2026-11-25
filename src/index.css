@@ -21,7 +21,7 @@
   --color-exito-fondo: #f0fdf4;
   --color-aviso: #a16207;
   --color-aviso-fondo: #fefce8;
-
+  --fuente-titulos: 'Lilita One', system-ui, sans-serif;
   --radio: 10px;
   --sombra: 0 2px 10px rgba(0, 0, 0, 0.4);
 }
@@ -62,42 +62,88 @@ a {
 }
 
 /* ---------- 3. Barra de navegación ---------- */
+/* Negra como el recuadro de la hamburguesa, con una línea dorada abajo.
+   En celular va en dos filas: arriba el logo y "Cerrar sesión", abajo las secciones
+   (si no entran en una fila, bajan de renglón: así se ven todas). */
 .barra {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 16px;
-  padding: 12px 16px;
-  background-color: var(--color-acento);
   position: sticky;
   top: 0;
   z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background-color: #0b0610;
+  border-bottom: 3px solid var(--color-destacado);
 }
 
 .barra-marca {
-  font-weight: 700;
-  font-size: 1.2rem;
-  color: #ffffff;
   margin-right: auto;
+  color: #ffffff;
+  white-space: nowrap;
 }
 
-.barra a {
-  color: #ffffff;
+/* La parte "Bit" del logo, en naranja. */
+.barra-marca-bit {
+  color: #fb923c;
+}
+
+/* order: 3 la manda después del botón (a la segunda fila) y width: 100% le hace ocupar la fila entera. */
+.barra-links {
+  order: 3;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.barra-links a {
+  padding: 6px 14px;
+  border-radius: 999px;
+  color: var(--color-destacado);
   text-decoration: none;
-  padding: 4px 0;
-  border-bottom: 2px solid transparent;
+  white-space: nowrap;
 }
 
-/* NavLink le pone la clase "active" al link de la pantalla actual. */
-.barra a.active {
-  border-bottom-color: #ffffff;
+.barra-links a:hover {
+  background-color: rgba(251, 191, 36, 0.14);
 }
 
-.barra button {
+/* NavLink le pone la clase "active" a la sección en la que estás: píldora dorada. */
+.barra-links a.active {
+  background-color: var(--color-destacado);
+  color: #1c0a2b;
+  font-weight: 700;
+}
+
+.barra-salir {
+  padding: 6px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 999px;
   background-color: transparent;
-  border: 1px solid #ffffff;
-  color: #ffffff;
+  color: var(--color-texto);
+  white-space: nowrap;
 }
+
+.barra-salir:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Compu: todo en una sola fila. */
+@media (min-width: 900px) {
+  .barra {
+    flex-wrap: nowrap;
+    padding: 10px 24px;
+  }
+
+  .barra-links {
+    order: 0;
+    width: auto;
+    flex-wrap: nowrap;
+  }
+}
+
 
 /* ---------- 4. Botones ---------- */
 button {
@@ -771,4 +817,218 @@ td button {
   color: #ffffff;
   font-weight: 600;
   text-decoration: none;
+}
+
+/* ---------- 17. Hamburguesa por capas ---------- */
+
+/* Columna invertida: el primer elemento (el pan de abajo) queda abajo y cada capa nueva, arriba. */
+.hamburguesa {
+  display: flex;
+  flex-direction: column-reverse;
+  width: 100%;
+  max-width: 260px;
+  margin: 16px auto;
+}
+
+.hamburguesa img {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: auto;
+}
+
+.hamburguesa-chica {
+  max-width: 64px;
+  margin: 0;
+}
+
+/* Cuánto se hunde cada capa sobre la de abajo (en % del ancho, así funciona igual en grande y en chico). */
+.capa-carne { margin-bottom: -9%; }
+.capa-queso { margin-bottom: -17%; }
+.capa-panceta { margin-bottom: -10%; }
+.capa-huevo { margin-bottom: -8%; }
+.capa-lechuga { margin-bottom: -14%; }
+.capa-pepino { margin-bottom: -8%; }
+.capa-tomate { margin-bottom: -7%; }
+.capa-cebolla { margin-bottom: -6%; }
+.capa-pan-arriba { margin-bottom: -7%; }
+
+/* La capa nueva cae desde arriba con un rebote chico. */
+.capa {
+  animation: caer 0.35s cubic-bezier(0.3, 1.4, 0.6, 1);
+}
+
+.hamburguesa-chica .capa {
+  animation: none;
+}
+
+@keyframes caer {
+  from {
+    opacity: 0;
+    transform: translateY(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .capa {
+    animation: none;
+  }
+}
+
+/* ---------- 18. Armador en dos columnas y recuadro negro con cheddar ---------- */
+
+/* En celular: el recuadro queda pegado abajo de la pantalla mientras se elige
+   (sticky), con la hamburguesa chiquita, el precio y el botón en una fila. */
+.armar-resumen {
+  position: sticky;
+  bottom: 8px;
+  z-index: 5;
+  display: grid;
+  grid-template-columns: 64px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 20px 14px 12px;
+  overflow: hidden;
+  background-color: #0b0610;
+  border-radius: var(--radio);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+/* El cheddar derretido que chorrea desde arriba del recuadro: un dibujo SVG
+   escrito adentro del CSS (data:image/svg+xml). %23 es el # del color, escrito así para que funcione en una URL. */
+.armar-resumen::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 14px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 34' preserveAspectRatio='none'%3E%3Cpath fill='%23fbbf24' d='M0 0H220V12C214 12 212 16 212 22C212 28 204 28 204 22C204 16 200 13 192 13C184 13 182 17 182 27C182 35 172 35 172 27C172 17 168 13 158 13C148 13 146 16 146 20C146 25 139 25 139 20C139 15 134 12 122 12C110 12 107 16 107 30C107 38 96 38 96 30C96 17 92 13 80 13C70 13 68 16 68 22C68 27 61 27 61 22C61 16 56 13 46 13C36 13 34 18 34 26C34 33 25 33 25 26C25 17 20 12 10 12C4 12 0 14 0 14Z'/%3E%3C/svg%3E");
+  background-size: 100% 100%;
+}
+
+.armar-resumen .hamburguesa {
+  max-width: 64px;
+  margin: 0;
+}
+
+.armar-resumen h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.armar-resumen .total {
+  margin: 0;
+  font-size: 1.3rem;
+}
+
+/* Botón dorado (color cheddar) con letra oscura para que se lea. */
+.boton-dorado {
+  background-color: var(--color-destacado);
+  color: #1c0a2b;
+  font-weight: 700;
+}
+
+.boton-dorado:hover {
+  background-color: #f59e0b;
+}
+
+/* En compu: dos columnas. El recuadro va a la derecha y queda fijo arriba al scrollear. */
+@media (min-width: 900px) {
+  .armar {
+    max-width: 960px;
+  }
+
+  .armar-columnas {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 24px;
+    align-items: start;
+  }
+
+  .armar-resumen {
+    top: 72px;
+    bottom: auto;
+    display: block;
+    margin-top: 0;
+    padding: 52px 20px 20px;
+    text-align: center;
+  }
+
+  .armar-resumen::before {
+    height: 36px;
+  }
+
+  .armar-resumen .hamburguesa {
+    max-width: min(240px, 30vh); /*no ocupa mas del 30% del alto de pantalla*/
+    margin: 0 auto 16px;
+  }
+
+  .armar-resumen h3 {
+    font-size: 1.4rem;
+  }
+
+  .armar-resumen .total {
+    font-size: 1.8rem;
+  }
+
+  .armar-resumen button {
+    width: 100%;
+    margin-top: 12px;
+    padding: 12px;
+  }
+}
+
+/* ---------- 19. Tipografía de los títulos ---------- */
+/* Lilita One viene de Google Fonts (se carga en index.html). Tiene un solo grosor,
+   por eso font-weight: 400: si se le pide negrita, el navegador la "engorda" a mano y se ve fea.
+   Va al final del archivo para ganarles a las reglas anteriores que ponían otro grosor. */
+h1,
+h2,
+h3,
+.barra-marca,
+.bienvenida-titulo,
+.pagina-error-codigo {
+  font-family: var(--fuente-titulos);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
+.barra-marca {
+  font-size: 1.6rem;
+}
+
+/* ---------- 20. Hamburguesa chiquita en las tarjetas de pedido ---------- */
+/* Cada hamburguesa del pedido: el dibujo a la izquierda (sobre un "plato" negro) y el detalle a la derecha. */
+.producto-con-dibujo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.producto-dibujo {
+  flex-shrink: 0;
+  width: 84px;
+  padding: 8px 10px;
+  background-color: #0b0610;
+  border-radius: var(--radio);
+}
+
+.producto-dibujo .hamburguesa-chica {
+  max-width: 64px;
+  margin: 0 auto;
+}
+
+.producto-detalle {
+  flex: 1;
+}
+
+.producto-con-dibujo h4 {
+  margin: 0 0 4px;
 }

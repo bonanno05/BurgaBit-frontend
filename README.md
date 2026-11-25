@@ -142,3 +142,10 @@ Publicado en **Render** como *Static Site*, conectado a este repositorio: cada `
 - Los pedidos de la cocina no se actualizan solos: hay un botón "Actualizar".
 - No se pueden borrar categorías ni cambiar la categoría de un ingrediente (el backend no lo permite).
 - El token se guarda en `localStorage`, que es accesible desde JavaScript; la alternativa más segura (cookies `httpOnly`) requiere cambios en el backend.
+
+
+## Créditos
+
+- Imagen de la hamburguesa de la pantalla de bienvenida: "Argentine Hamburger with Lettuce and Tomato", de Horacio Cambeiro, [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Argentine_Hamburger_with_Lettuce_and_Tomato.png), licencia [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
+- Fotos de hamburguesas: Ethan Smith y Giorgi Iremadze en [Unsplash](https://unsplash.com), y Pedro Furtado en [Pexels](https://www.pexels.com).
+- Capas de la hamburguesa del armador: imagen generada con Gemini (Google) y separada en capas para este proyecto.
