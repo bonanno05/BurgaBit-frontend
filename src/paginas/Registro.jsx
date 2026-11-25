@@ -93,19 +93,19 @@ function Registro() {
 
         <form onSubmit={enviarFormulario} noValidate>
           <label htmlFor="nombre">Nombre</label>
-          <input id="nombre" type="text" value={nombre} onChange={cambiarNombre} />
+          <input id="nombre" type="text" autoComplete="given-name" value={nombre} onChange={cambiarNombre} />
 
           <label htmlFor="apellido">Apellido</label>
-          <input id="apellido" type="text" value={apellido} onChange={cambiarApellido} />
+          <input id="apellido" type="text" autoComplete="family-name" value={apellido} onChange={cambiarApellido} />
 
           <label htmlFor="email">Email</label>
-          <input id="email" type="email" value={email} onChange={cambiarEmail} />
+          <input id="email" type="email" autoComplete="email" value={email} onChange={cambiarEmail} />
 
           <label htmlFor="password">Contraseña (mínimo 8 caracteres)</label>
-          <input id="password" type="password" value={password} onChange={cambiarPassword} />
+          <input id="password" type="password" autoComplete="new-password" value={password} onChange={cambiarPassword} />
 
           <label htmlFor="repetirPassword">Repetir contraseña</label>
-          <input id="repetirPassword" type="password" value={repetirPassword} onChange={cambiarRepetirPassword} />
+          <input id="repetirPassword" type="password" autoComplete="new-password" value={repetirPassword} onChange={cambiarRepetirPassword} />
 
           {error !== '' && <p className="error">{error}</p>}
 

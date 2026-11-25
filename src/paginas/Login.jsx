@@ -69,9 +69,9 @@ function Login() { //componente
 
           <form onSubmit={enviarFormulario} noValidate>
             <label htmlFor="email">Email</label>
-            <input id="email" type="email" value={email} onChange={cambiarEmail}/>
+            <input id="email" type="email" autoComplete="email" value={email} onChange={cambiarEmail}/>
             <label htmlFor="password">Contraseña</label>
-            <input id="password" type="password" value={password} onChange={cambiarPassword}/>
+            <input id="password" type="password" autoComplete="current-password" value={password} onChange={cambiarPassword}/>
 
             {error !== '' && <p className='error'>{error}</p>} {/*hace aparecer el error en la pantalla*/}
             
