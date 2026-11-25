@@ -1,10 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router';
 import { usePedidoConSesion } from '../contexto/usePedidoConSesion';
 import { formatearPrecio } from '../utilidades/formato';
 import SelectorIngrediente from '../componentes/SelectorIngrediente';
 import ResumenPedido from '../componentes/ResumenPedido';
 import DibujoHamburguesa from '../componentes/DibujoHamburguesa';
+import { SesionContexto } from '../contexto/SesionContexto';
+import { leerPedidoGuardado, guardarPedido, borrarPedidoGuardado } from '../utilidades/pedidoGuardado';
 
 // La misma regla que MAX_POR_INGREDIENTE en clienteControlador.js del backend.
 const MAXIMO_POR_INGREDIENTE = 3;
@@ -16,7 +18,12 @@ function ArmarHamburguesa() {
   const [error, setError] = useState('');
   const [seleccion, setSeleccion] = useState({});
   const [pasoActual, setPasoActual] = useState(0);
-  const [productos, setProductos] = useState([]);
+  const sesion = useContext(SesionContexto);
+  // Arranca con las hamburguesas que hayan quedado guardadas sin confirmar.
+  // Se le pasa una función para que lea el localStorage solo la primera vez, no en cada dibujo.
+  const [productos, setProductos] = useState(function () {
+    return leerPedidoGuardado(sesion.idUsuario);
+  });
   const pedirConSesion = usePedidoConSesion();
   const [enviando, setEnviando] = useState(false);
   const [errorPedido, setErrorPedido] = useState('');
@@ -42,6 +49,11 @@ function ArmarHamburguesa() {
 
     cargarMenu();
   }, [pedirConSesion]);
+
+  // Cada vez que cambian las hamburguesas agregadas (agregar o quitar), se guardan en el navegador.
+  useEffect(function () {
+    guardarPedido(sesion.idUsuario, productos);
+  }, [sesion.idUsuario, productos]);
 
   // Devuelve los ingredientes del menú que pertenecen a una categoría.
   function ingredientesDe(categoria) {
@@ -225,6 +237,8 @@ function ArmarHamburguesa() {
     setErrorPedido('');
     try {
       await pedirConSesion('/cliente', 'POST', armarCuerpoDelPedido());
+      // El pedido ya está en el backend, lo guardado en el navegador se borra.
+      borrarPedidoGuardado(sesion.idUsuario);
       navegar('/mis-pedidos', { state: { pedidoConfirmado: true } });
     } catch (fallo) {
       setErrorPedido(fallo.message);
