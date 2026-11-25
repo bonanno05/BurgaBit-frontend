@@ -4,15 +4,47 @@
 import { formatearPrecio, formatearFecha } from '../utilidades/formato';
 import DibujoHamburguesa from './DibujoHamburguesa';
 
+// Clase de CSS para cada estado: cada una tiene su color (sección 23 de index.css).
+// Las claves son los mismos textos que ESTADOS en Orden.js del backend.
+const CLASE_POR_ESTADO = {
+  'Pendiente': 'estado-pendiente',
+  'En preparación': 'estado-preparacion',
+  'Lista para retirar': 'estado-lista',
+  'Entregada': 'estado-entregada',
+  'Cancelado': 'estado-cancelado',
+};
+
+// Busca en el historial del pedido el motivo con el que se canceló.
+// Devuelve '' si no hay historial o si no tiene motivo.
+function motivoDeCancelacion(pedido) {
+  if (pedido.historialEstados === undefined) {
+    return '';
+  }
+  for (const cambio of pedido.historialEstados) {
+    if (cambio.estado === 'Cancelado' && cambio.motivo) {
+      return cambio.motivo;
+    }
+  }
+  return '';
+}
+
 function TarjetaPedido(props) {
   const pedido = props.pedido;
+  const motivo = motivoDeCancelacion(pedido);
+
+  let claseEstado = 'estado';
+  if (CLASE_POR_ESTADO[pedido.estado] !== undefined) {
+    claseEstado = 'estado ' + CLASE_POR_ESTADO[pedido.estado];
+  }
 
   return (
     <article className="tarjeta-pedido">
       <header>
         <span>{formatearFecha(pedido.createdAt)}</span>
-        <span className="estado">{pedido.estado}</span>
+        <span className={claseEstado}>{pedido.estado}</span>
       </header>
+
+      {motivo !== '' && <p className="motivo-cancelacion">Motivo de la cancelación: {motivo}</p>}
 
       {pedido.productos.map(function (producto, posicion) {
         return (
