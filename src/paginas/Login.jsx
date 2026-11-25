@@ -64,7 +64,12 @@ function Login() { //componente
     <div className="pantalla-sesion">
       <div className="sesion-foto"></div>
 
-        <div className="login"> 
+        <div className="login">
+
+          <p className="marca-sesion">
+            Burga<span className="barra-marca-bit">Bit</span>
+          </p>
+          
           <h2>Iniciar sesión</h2>
 
           <form onSubmit={enviarFormulario} noValidate>

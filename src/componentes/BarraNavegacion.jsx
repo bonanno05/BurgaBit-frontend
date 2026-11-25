@@ -7,9 +7,13 @@ function BarraNavegacion() {
 
   return (
     <nav className="barra">
-      <span className="barra-marca">
-        Burga<span className="barra-marca-bit">Bit</span>
-      </span>
+      {/* Logo y frase juntos, uno abajo del otro. */}
+      <div className="barra-identidad">
+        <span className="barra-marca">
+          Burga<span className="barra-marca-bit">Bit</span>
+        </span>
+        <span className="barra-lema">Tu hamburguesa a tu gusto</span>
+      </div>
 
       {/* Las secciones van juntas en un div para poder acomodarlas con CSS
           (en celular, en una segunda fila). */}

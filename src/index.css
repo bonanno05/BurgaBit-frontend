@@ -1032,3 +1032,28 @@ h3,
 .producto-con-dibujo h4 {
   margin: 0 0 4px;
 }
+
+
+/* ---------- 21. Logo con frase en la barra y logo en Login/Registro ---------- */
+/* El logo y la frase van en columna; margin-right: auto empuja las secciones y el botón a la derecha. */
+.barra-identidad {
+  display: flex;
+  flex-direction: column;
+  margin-right: auto;
+  line-height: 1.1;
+}
+
+.barra-lema {
+  font-size: 0.8rem;
+  color: var(--color-suave);
+  white-space: nowrap;
+}
+
+/* El logo grande arriba del formulario de Login y Registro. */
+.marca-sesion {
+  margin: 0 0 8px;
+  font-family: var(--fuente-titulos);
+  font-size: 2.4rem;
+  line-height: 1;
+  color: #ffffff;
+}

@@ -89,6 +89,11 @@ function Registro() {
       <div className="sesion-foto"></div>
 
       <div className="registro">
+
+        <p className="marca-sesion">
+          Burga<span className="barra-marca-bit">Bit</span>
+        </p>
+
         <h2>Crear cuenta</h2>
 
         <form onSubmit={enviarFormulario} noValidate>
