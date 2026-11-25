@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from 'react';
 import { SesionContexto } from '../contexto/SesionContexto';
 import { usePedidoConSesion } from '../contexto/usePedidoConSesion';
 import FormularioEmpleado from '../componentes/FormularioEmpleado';
+import Cargando from '../componentes/Cargando';
 
 function AdminUsuarios() {
   const [usuarios, setUsuarios] = useState([]);
@@ -71,7 +72,7 @@ function AdminUsuarios() {
   }
 
   if (cargando) {
-    return <p>Cargando los usuarios…</p>;
+    return <Cargando texto="Cargando los usuarios…" />;
   }
 
   return (

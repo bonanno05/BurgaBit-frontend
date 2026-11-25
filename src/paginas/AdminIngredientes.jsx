@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { usePedidoConSesion } from '../contexto/usePedidoConSesion';
 import { formatearPrecio } from '../utilidades/formato';
 import FormularioIngrediente from '../componentes/FormularioIngrediente';
+import Cargando from '../componentes/Cargando';
 
 function AdminIngredientes() {
   const [ingredientes, setIngredientes] = useState([]);
@@ -127,7 +128,7 @@ function AdminIngredientes() {
   }
 
   if (cargando) {
-    return <p>Cargando los ingredientes…</p>;
+    return <Cargando texto="Cargando los ingredientes…" />;
   }
 
   let ingredienteEditando = null;

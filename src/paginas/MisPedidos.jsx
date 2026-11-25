@@ -3,6 +3,7 @@ import { useLocation, Link } from 'react-router';
 import { usePedidoConSesion } from '../contexto/usePedidoConSesion';
 import TarjetaPedido from '../componentes/TarjetaPedido';
 import hamburguesaCerca from '../assets/hamburguesa-cerca.webp';
+import Cargando from '../componentes/Cargando';
 
 function MisPedidos() {
   const [pedidos, setPedidos] = useState([]);
@@ -63,7 +64,7 @@ function MisPedidos() {
   }
 
   if (cargando) {
-    return <p>Cargando tus pedidos…</p>;
+    return <Cargando texto="Cargando tus pedidos…" />;
   }
 
   return (

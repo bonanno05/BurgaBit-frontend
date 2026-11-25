@@ -7,6 +7,8 @@ import ResumenPedido from '../componentes/ResumenPedido';
 import DibujoHamburguesa from '../componentes/DibujoHamburguesa';
 import { SesionContexto } from '../contexto/SesionContexto';
 import { leerPedidoGuardado, guardarPedido, borrarPedidoGuardado } from '../utilidades/pedidoGuardado';
+import Cargando from '../componentes/Cargando';
+import ErrorConReintento from '../componentes/ErrorConReintento';
 
 // La misma regla que MAX_POR_INGREDIENTE en clienteControlador.js del backend.
 const MAXIMO_POR_INGREDIENTE = 3;
@@ -260,11 +262,11 @@ function ArmarHamburguesa() {
   }
 
   if (cargando) {
-    return <p>Cargando el menú…</p>;
+    return <Cargando texto="Cargando el menú…" />;
   }
 
   if (error !== '') {
-    return <p className="error">{error}</p>;
+    return <ErrorConReintento mensaje={error} />;
   }
 
     if (categorias.length === 0) {

@@ -3,6 +3,7 @@ import { useState, useContext } from 'react';
 import { SesionContexto } from '../contexto/SesionContexto';
 import { Link } from 'react-router';
 import { esEmailValido } from '../utilidades/validaciones';
+import AvisoDemora from '../componentes/AvisoDemora';
 
 function Login() { //componente
 
@@ -81,6 +82,7 @@ function Login() { //componente
             {error !== '' && <p className='error'>{error}</p>} {/*hace aparecer el error en la pantalla*/}
             
             <button type="submit" disabled={cargando}>{cargando ? 'Ingresando' : 'Ingresar' }</button>
+            {cargando && <AvisoDemora />}
           </form>
           <p>
             ¿No tenés cuenta? <Link to="/registro">Registrate</Link>

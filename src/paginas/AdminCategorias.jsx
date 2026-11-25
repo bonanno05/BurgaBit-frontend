@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { usePedidoConSesion } from '../contexto/usePedidoConSesion';
 import FormularioCategoria from '../componentes/FormularioCategoria';
+import Cargando from '../componentes/Cargando';
 
 function AdminCategorias() {
   const [categorias, setCategorias] = useState([]);
@@ -54,7 +55,7 @@ function AdminCategorias() {
   }
 
   if (cargando) {
-    return <p>Cargando las categorías…</p>;
+    return <Cargando texto="Cargando las categorías…" />;
   }
 
   // La categoría que se está editando (o null si se está creando una nueva).

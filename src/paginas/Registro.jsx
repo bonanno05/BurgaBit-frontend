@@ -3,6 +3,7 @@ import { Link } from 'react-router';
 import { SesionContexto } from '../contexto/SesionContexto';
 import { registrarse, iniciarSesion } from '../servicios/authServicio';
 import { esEmailValido } from '../utilidades/validaciones';
+import AvisoDemora from '../componentes/AvisoDemora';
 
 function Registro() {
   const [nombre, setNombre] = useState('');
@@ -117,6 +118,8 @@ function Registro() {
           <button type="submit" disabled={cargando}>
             {cargando ? 'Creando cuenta…' : 'Crear cuenta'}
           </button>
+          
+          {cargando && <AvisoDemora />}
         </form>
 
         <p>

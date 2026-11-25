@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { usePedidoConSesion } from '../contexto/usePedidoConSesion';
 import TarjetaPedido from '../componentes/TarjetaPedido';
+import Cargando from '../componentes/Cargando';
 
 // A qué estado pasa cada pedido con el botón de avanzar.
 // Son las mismas transiciones que TRANSICIONES en cocineroControlador.js del backend (sin Cancelado).
@@ -101,7 +102,7 @@ function Cocina() {
   }
 
   if (cargando) {
-    return <p>Cargando los pedidos…</p>;
+    return <Cargando texto="Cargando los pedidos…" />;
   }
 
   return (
