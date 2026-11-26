@@ -1148,3 +1148,16 @@ h3,
   font-size: 0.95rem;
   color: #f87171;
 }
+
+/* ---------- 24. Errores debajo de cada campo ---------- */
+/* El mensaje pegado abajo del campo (el margen negativo lo acerca, porque el form tiene gap). */
+.error-campo {
+  margin: -4px 0 4px;
+  font-size: 0.9rem;
+  color: #f87171;
+}
+
+/* El campo con error se marca con borde rojo. aria-invalid lo pone React según haya error o no. */
+input[aria-invalid="true"] {
+  border-color: #f87171;
+}

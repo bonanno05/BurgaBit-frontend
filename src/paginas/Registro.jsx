@@ -2,8 +2,8 @@ import { useState, useContext } from 'react';
 import { Link } from 'react-router';
 import { SesionContexto } from '../contexto/SesionContexto';
 import { registrarse, iniciarSesion } from '../servicios/authServicio';
-import { esEmailValido } from '../utilidades/validaciones';
 import AvisoDemora from '../componentes/AvisoDemora';
+import { erroresDeRegistro, hayErrores } from '../utilidades/validaciones';
 
 function Registro() {
   const [nombre, setNombre] = useState('');
@@ -13,63 +13,60 @@ function Registro() {
   const [repetirPassword, setRepetirPassword] = useState('');
   const [error, setError] = useState('');
   const [cargando, setCargando] = useState(false);
-
+  const [errores, setErrores] = useState({});
   const sesion = useContext(SesionContexto);
+
+  function sacarError(campo) {
+    if (errores[campo] === undefined) {
+      return;
+    }
+    const nuevosErrores = { ...errores };
+    delete nuevosErrores[campo];
+    setErrores(nuevosErrores);
+  }
+
 
   function cambiarNombre(evento) {
     setNombre(evento.target.value);
+    sacarError('nombre');
   }
 
   function cambiarApellido(evento) {
     setApellido(evento.target.value);
+    sacarError('apellido');
   }
 
   function cambiarEmail(evento) {
     setEmail(evento.target.value);
+    sacarError('email');
   }
 
   function cambiarPassword(evento) {
     setPassword(evento.target.value);
+    sacarError('password');
   }
 
   function cambiarRepetirPassword(evento) {
     setRepetirPassword(evento.target.value);
+    sacarError('repetirPassword');
   }
 
   async function enviarFormulario(evento) {
     evento.preventDefault();
 
-    if (nombre.trim() === '') {
-      setError('El nombre es obligatorio.');
-      return;
-    }
-
-    if (apellido.trim() === '') {
-      setError('El apellido es obligatorio.');
-      return;
-    }
-
-    if (email.trim() === '') {
-      setError('El email es obligatorio.');
-      return;
-    }
-
-      if (esEmailValido(email) === false) {
-      setError('El email no tiene un formato válido.');
-      return;
-    }
-
-    if (password.length < 8) {
-      setError('La contraseña debe tener al menos 8 caracteres.');
-      return;
-    }
-
-    if (password !== repetirPassword) {
-      setError('Las contraseñas no coinciden.');
-      return;
-    }
-
+    const nuevosErrores = erroresDeRegistro({
+      nombre: nombre,
+      apellido: apellido,
+      email: email,
+      password: password,
+      repetirPassword: repetirPassword,
+    });
+    setErrores(nuevosErrores);
     setError('');
+    if (hayErrores(nuevosErrores)) {
+      return;
+    }
+  
     setCargando(true);
 
     const emailLimpio = email.trim().toLowerCase();
@@ -99,19 +96,24 @@ function Registro() {
 
         <form onSubmit={enviarFormulario} noValidate>
           <label htmlFor="nombre">Nombre</label>
-          <input id="nombre" type="text" autoComplete="given-name" value={nombre} onChange={cambiarNombre} />
+          <input id="nombre" type="text" autoComplete="given-name" value={nombre} onChange={cambiarNombre} aria-invalid={errores.nombre !== undefined} aria-describedby="error-nombre" />
+          {errores.nombre !== undefined && <p id="error-nombre" className="error-campo">{errores.nombre}</p>}
 
           <label htmlFor="apellido">Apellido</label>
-          <input id="apellido" type="text" autoComplete="family-name" value={apellido} onChange={cambiarApellido} />
+          <input id="apellido" type="text" autoComplete="family-name" value={apellido} onChange={cambiarApellido} aria-invalid={errores.apellido !== undefined} aria-describedby="error-apellido" />
+          {errores.apellido !== undefined && <p id="error-apellido" className="error-campo">{errores.apellido}</p>}
 
           <label htmlFor="email">Email</label>
-          <input id="email" type="email" autoComplete="email" value={email} onChange={cambiarEmail} />
+          <input id="email" type="email" autoComplete="email" value={email} onChange={cambiarEmail} aria-invalid={errores.email !== undefined} aria-describedby="error-email" />
+          {errores.email !== undefined && <p id="error-email" className="error-campo">{errores.email}</p>}
 
           <label htmlFor="password">Contraseña (mínimo 8 caracteres)</label>
-          <input id="password" type="password" autoComplete="new-password" value={password} onChange={cambiarPassword} />
+          <input id="password" type="password" autoComplete="new-password" value={password} onChange={cambiarPassword} aria-invalid={errores.password !== undefined} aria-describedby="error-password" />
+          {errores.password !== undefined && <p id="error-password" className="error-campo">{errores.password}</p>}
 
           <label htmlFor="repetirPassword">Repetir contraseña</label>
-          <input id="repetirPassword" type="password" autoComplete="new-password" value={repetirPassword} onChange={cambiarRepetirPassword} />
+          <input id="repetirPassword" type="password" autoComplete="new-password" value={repetirPassword} onChange={cambiarRepetirPassword} aria-invalid={errores.repetirPassword !== undefined} aria-describedby="error-repetirPassword" />
+          {errores.repetirPassword !== undefined && <p id="error-repetirPassword" className="error-campo">{errores.repetirPassword}</p>}
 
           {error !== '' && <p className="error">{error}</p>}
 

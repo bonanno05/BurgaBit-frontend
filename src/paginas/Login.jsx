@@ -2,7 +2,7 @@ import { iniciarSesion } from '../servicios/authServicio'; //importa funcion de 
 import { useState, useContext } from 'react';
 import { SesionContexto } from '../contexto/SesionContexto';
 import { Link } from 'react-router';
-import { esEmailValido } from '../utilidades/validaciones';
+import { erroresDeLogin, hayErrores } from '../utilidades/validaciones';
 import AvisoDemora from '../componentes/AvisoDemora';
 
 function Login() { //componente
@@ -12,35 +12,41 @@ function Login() { //componente
   const [error, setError] = useState('');
   const [cargando, setCargando] = useState(false);
   const sesion = useContext(SesionContexto);
+  const [errores, setErrores] = useState({});
+
+  // Al escribir en un campo con error, se borra el error de ese campo.
+  // Se arma una copia sin ese campo: el estado no se modifica directo.
+  function sacarError(campo) {
+    if (errores[campo] === undefined) {
+      return;
+    }
+    const nuevosErrores = { ...errores };
+    delete nuevosErrores[campo];
+    setErrores(nuevosErrores);
+  }
 
 
   function cambiarEmail(evento) { //funcion que se ejecuta en la tecla
     setEmail(evento.target.value);
+    sacarError('email');
   }
 
   function cambiarPassword(evento) { //funcion que se ejecuta en la tecla
     setPassword(evento.target.value);
+    sacarError('password');
   }
 
   async function enviarFormulario(evento) {
     evento.preventDefault();
 
-    if (email.trim() === ''){ //.trim devuelve el texto sin espacios al principio ni al final
-      setError('El mail es obligatorio');
-      return;
-    }
-
-    if (esEmailValido(email) === false) {
-      setError('El email no tiene un formato válido.');
-      return;
-    }
-
-    if (password.trim() === ''){
-      setError('La contraseña es obligatoria.');
-      return;
-    }
-
+    // Se revisan todos los campos juntos: así se ven todos los errores de una vez.
+    const nuevosErrores = erroresDeLogin(email, password);
+    setErrores(nuevosErrores);
     setError('');
+    if (hayErrores(nuevosErrores)) {
+      return;
+    }
+
     setCargando(true);
 
     try{
@@ -75,10 +81,11 @@ function Login() { //componente
 
           <form onSubmit={enviarFormulario} noValidate>
             <label htmlFor="email">Email</label>
-            <input id="email" type="email" autoComplete="email" value={email} onChange={cambiarEmail}/>
+            <input id="email" type="email" autoComplete="email" value={email} onChange={cambiarEmail} aria-invalid={errores.email !== undefined} aria-describedby="error-email"/>
+            {errores.email !== undefined && <p id="error-email" className="error-campo">{errores.email}</p>}
             <label htmlFor="password">Contraseña</label>
-            <input id="password" type="password" autoComplete="current-password" value={password} onChange={cambiarPassword}/>
-
+            <input id="password" type="password" autoComplete="current-password" value={password} onChange={cambiarPassword} aria-invalid={errores.password !== undefined} aria-describedby="error-password"/>
+            {errores.password !== undefined && <p id="error-password" className="error-campo">{errores.password}</p>}
             {error !== '' && <p className='error'>{error}</p>} {/*hace aparecer el error en la pantalla*/}
             
             <button type="submit" disabled={cargando}>{cargando ? 'Ingresando' : 'Ingresar' }</button>
