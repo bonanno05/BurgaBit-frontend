@@ -1164,6 +1164,6 @@ input[aria-invalid="true"] {
 
 /* ---------- 25. Buscador de usuarios ---------- */
 /* En Usuarios, el buscador y el desplegable ocupan el ancho disponible (en el celular, uno abajo del otro). */
-.admin-usuarios .filtro label {
+.admin-usuarios .filtro label, .buscador label {
   flex: 1 1 200px;
 }

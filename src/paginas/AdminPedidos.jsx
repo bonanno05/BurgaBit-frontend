@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { usePedidoConSesion } from '../contexto/usePedidoConSesion';
 import TarjetaPedido from '../componentes/TarjetaPedido';
 import HistorialEstados from '../componentes/HistorialEstados';
+import { normalizarTexto, personaCoincide } from '../utilidades/busqueda';
 
 // Los mismos estados que ESTADOS en el modelo Orden.js del backend.
 const ESTADOS = ['Pendiente', 'En preparación', 'Lista para retirar', 'Entregada', 'Cancelado'];
@@ -15,7 +16,8 @@ function AdminPedidos() {
   const [idAbierto, setIdAbierto] = useState('');
   const [detalle, setDetalle] = useState(null);
   const [cargandoDetalle, setCargandoDetalle] = useState(false);
-
+  //filtra los pedidos que ya llegaron
+  const [busqueda, setBusqueda] = useState('');
   const pedirConSesion = usePedidoConSesion();
 
   // Los pedidos se piden recién cuando el admin toca "Buscar" (no al abrir la pantalla).
@@ -74,6 +76,17 @@ function AdminPedidos() {
     }
   }
 
+  function cambiarBusqueda(evento) {
+    setBusqueda(evento.target.value);
+  }
+
+  // Los pedidos que se ven se calculan en cada dibujo (valor derivado), no son otro estado.
+  // Lo buscado se normaliza una sola vez, no una vez por pedido.
+  const textoBuscado = normalizarTexto(busqueda);
+  const pedidosVisibles = pedidos.filter(function (pedido) {
+    return personaCoincide(pedido.cliente, textoBuscado);
+  });
+
   return (
     <div className="admin-pedidos">
       <h2>Pedidos</h2>
@@ -105,8 +118,31 @@ function AdminPedidos() {
       )}
 
       {buscado && pedidos.length === 0 && <p>No hay pedidos para mostrar.</p>}
+    
+      {/* El buscador aparece cuando ya hay pedidos, filtra los que trajo "Buscar". */}
+      {pedidos.length > 0 && (
+        <>
+          <div className="filtro buscador">
+            <label>
+              Cliente
+              <input
+                type="search"
+                value={busqueda}
+                onChange={cambiarBusqueda}
+                placeholder="Nombre, apellido o email"
+              />
+            </label>
+          </div>
 
-      {pedidos.map(function (pedido) {
+          <p className="nota">
+            Mostrando {pedidosVisibles.length} de {pedidos.length} pedidos.
+          </p>
+
+          {pedidosVisibles.length === 0 && <p>Ningún pedido coincide con la búsqueda.</p>}
+        </>
+      )}
+
+      {pedidosVisibles.map(function (pedido) {
         const abierto = idAbierto === pedido._id;
 
         return (

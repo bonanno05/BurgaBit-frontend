@@ -3,7 +3,7 @@ import { SesionContexto } from '../contexto/SesionContexto';
 import { usePedidoConSesion } from '../contexto/usePedidoConSesion';
 import FormularioEmpleado from '../componentes/FormularioEmpleado';
 import Cargando from '../componentes/Cargando';
-import { normalizarTexto } from '../utilidades/busqueda';
+import { normalizarTexto, personaCoincide } from '../utilidades/busqueda';
 
 // Opciones del desplegable de rol. "valor" es el rol como lo guarda el backend.
 const ROLES = [
@@ -19,11 +19,7 @@ function usuarioCoincide(usuario, textoBuscado, rol) {
   if (rol !== '' && usuario.rol !== rol) {
     return false;
   }
-  if (textoBuscado === '') {
-    return true;
-  }
-  const textoDelUsuario = normalizarTexto(usuario.nombre + ' ' + usuario.apellido + ' ' + usuario.email);
-  return textoDelUsuario.includes(textoBuscado);
+  return personaCoincide(usuario, textoBuscado);
 }
 function AdminUsuarios() {
   const [usuarios, setUsuarios] = useState([]);
