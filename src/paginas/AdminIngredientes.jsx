@@ -179,12 +179,12 @@ function AdminIngredientes() {
 
               return (
                 <tr key={ingrediente._id}>
-                  <td>{ingrediente.nombre}</td>
-                  <td>{nombreCategoria(ingrediente.categoria)}</td>
-                  <td>{formatearPrecio(ingrediente.precio)}</td>
-                  <td>{ingrediente.cantidad}</td>
-                  <td>{estadoEnMenu(ingrediente)}</td>
-                  <td>
+                  <td data-label="Nombre">{ingrediente.nombre}</td>
+                  <td data-label="Categoría">{nombreCategoria(ingrediente.categoria)}</td>
+                  <td data-label="Precio">{formatearPrecio(ingrediente.precio)}</td>
+                  <td data-label="Stock">{ingrediente.cantidad}</td>
+                  <td data-label="Estado">{estadoEnMenu(ingrediente)}</td>
+                  <td className="acciones">
                     <button
                       type="button"
                       onClick={function () { empezarEdicion(ingrediente._id); }}
@@ -196,7 +196,7 @@ function AdminIngredientes() {
                       Reponer
                     </button>
                     {ingrediente.isDisponible && (
-                      <button type="button" onClick={function () { darDeBaja(ingrediente); }} disabled={ocupado}>
+                      <button type="button" className="boton-peligro" onClick={function () { darDeBaja(ingrediente); }} disabled={ocupado}>
                         Dar de baja
                       </button>
                     )}

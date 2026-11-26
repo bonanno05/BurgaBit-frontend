@@ -1,5 +1,5 @@
 import { Link } from 'react-router';
-import hamburguesa from '../assets/burguer.png';
+import hamburguesa from '../assets/burguer.webp';
 
 //lo primero que se ve al entrar al link sin sesión.
 

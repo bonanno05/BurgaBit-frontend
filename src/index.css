@@ -319,7 +319,6 @@ select:focus {
 
 .selector-ingrediente .nombre {
   flex: 1;
-  text-transform: capitalize;
 }
 
 .selector-ingrediente .precio {
@@ -355,8 +354,11 @@ select:focus {
   flex: 1;
 }
 
-.paso h3 {
-  text-transform: capitalize;
+/* Solo la primera letra en mayúscula
+::first-letter apunta a la primera letra del elemento. Los nombres llegan en minuscula del backend */
+.selector-ingrediente .nombre::first-letter,
+.paso h3::first-letter {
+  text-transform: uppercase;
 }
 
 /* Cada hamburguesa del resumen, separada con una línea. */
@@ -408,12 +410,65 @@ td button {
   font-size: 0.9rem;
 }
 
-/* ---------- 10. Celular: la tabla se desliza de costado en vez de romper la pantalla ---------- */
+/* ---------- 10. Celular: cada fila de una tabla se muestra como una tarjeta ---------- */
 @media (max-width: 699px) {
-  table {
+  /* La tabla deja de comportarse como tabla: cada parte pasa a ser un bloque. */
+  table,
+  tbody,
+  tr,
+  td {
     display: block;
-    overflow-x: auto;
-    white-space: nowrap;
+    width: 100%;
+  }
+
+  table {
+    background-color: transparent;
+    border: none;
+  }
+
+  /* Los títulos de las columnas se ocultan: cada dato muestra su título al lado (data-label). */
+  thead {
+    display: none;
+  }
+
+  /* Cada fila es una tarjeta. */
+  tr {
+    margin-bottom: 12px;
+    padding: 10px 14px;
+    background-color: var(--color-superficie);
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio);
+  }
+
+  /* Cada dato: el título a la izquierda y el valor a la derecha. */
+  td {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 6px 0;
+    border-bottom: none;
+    text-align: right;
+    overflow-wrap: anywhere;
+  }
+
+  /* El título sale del atributo data-label de cada celda. */
+  td::before {
+    content: attr(data-label);
+    font-weight: 700;
+    color: var(--color-suave);
+    text-align: left;
+    flex-shrink: 0;
+  }
+
+  /* La celda de los botones: sin título y con los botones que pueden bajar de renglón. */
+  td.acciones {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    padding-top: 10px;
+  }
+
+  td.acciones::before {
+    content: none;
   }
 }
 
@@ -1168,4 +1223,18 @@ input[aria-invalid="true"] {
 /* En Usuarios, el buscador y el desplegable ocupan el ancho disponible (en el celular, uno abajo del otro). */
 .admin-usuarios .filtro label, .buscador label {
   flex: 1 1 200px;
+}
+
+/* ---------- 26. Botones de acciones peligrosas ---------- */
+/* Cancelar un pedido, desactivar una cuenta, dar de baja un ingrediente:
+   borde y texto rojos sobre fondo transparente, para distinguirlos de las acciones normales. */
+.boton-peligro {
+  background-color: transparent;
+  color: #f87171;
+  border: 1px solid #f87171;
+}
+
+.boton-peligro:hover {
+  background-color: #f87171;
+  color: #1c0a2b;
 }

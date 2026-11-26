@@ -105,11 +105,11 @@ function AdminCategorias() {
             {categorias.map(function (categoria) {
               return (
                 <tr key={categoria._id}>
-                  <td>{categoria.paso}</td>
-                  <td>{categoria.nombre}</td>
-                  <td>{categoria.minimo}</td>
-                  <td>{categoria.maximo}</td>
-                  <td>
+                  <td data-label="Paso">{categoria.paso}</td>
+                  <td data-label="Nombre">{categoria.nombre}</td>
+                  <td data-label="Mínimo">{categoria.minimo}</td>
+                  <td data-label="Máximo">{categoria.maximo}</td>
+                  <td className="acciones">
                     <button
                       type="button"
                       onClick={function () { empezarEdicion(categoria._id); }}

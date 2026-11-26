@@ -134,7 +134,7 @@ function Cocina() {
             </button>
 
             {sePuedeCancelar && (
-              <button type="button" onClick={function () { cancelar(pedido); }} disabled={ocupado}>
+              <button type="button" className="boton-peligro" onClick={function () { cancelar(pedido); }} disabled={ocupado}>
                 Cancelar pedido
               </button>
             )}

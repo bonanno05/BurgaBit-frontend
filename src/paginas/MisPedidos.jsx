@@ -89,10 +89,7 @@ function MisPedidos() {
         return (
           <TarjetaPedido key={pedido._id} pedido={pedido}>
             {pedido.estado === 'Pendiente' && (
-              <button
-                onClick={function () { cancelarPedido(pedido._id); }}
-                disabled={idCancelando === pedido._id}
-              >
+              <button className="boton-peligro" onClick={function () { cancelarPedido(pedido._id); }} disabled={idCancelando === pedido._id}>
                 {idCancelando === pedido._id ? 'Cancelando…' : 'Cancelar pedido'}
               </button>
             )}

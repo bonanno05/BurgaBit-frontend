@@ -165,18 +165,14 @@ function AdminUsuarios() {
 
               return (
                 <tr key={usuario._id}>
-                  <td>{usuario.nombre} {usuario.apellido}</td>
-                  <td>{usuario.email}</td>
-                  <td>{usuario.rol}</td>
-                  <td>{usuario.isActivo ? 'Activa' : 'Desactivada'}</td>
-                  <td>
+                  <td data-label="Nombre">{usuario.nombre} {usuario.apellido}</td>
+                  <td data-label="Email">{usuario.email}</td>
+                  <td data-label="Rol">{usuario.rol}</td>
+                  <td data-label="Estado">{usuario.isActivo ? 'Activa' : 'Desactivada'}</td>
+                  <td className="acciones">
                     {esUnoMismo && <span>(tu cuenta)</span>}
                     {esUnoMismo === false && (
-                      <button
-                        type="button"
-                        onClick={function () { cambiarActivo(usuario); }}
-                        disabled={idCambiando === usuario._id}
-                      >
+                      <button className={usuario.isActivo ? 'boton-peligro' : ''} type="button" onClick={function () { cambiarActivo(usuario); }} disabled={idCambiando === usuario._id}>
                         {usuario.isActivo ? 'Desactivar' : 'Activar'}
                       </button>
                     )}
