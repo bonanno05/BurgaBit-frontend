@@ -1161,3 +1161,9 @@ h3,
 input[aria-invalid="true"] {
   border-color: #f87171;
 }
+
+/* ---------- 25. Buscador de usuarios ---------- */
+/* En Usuarios, el buscador y el desplegable ocupan el ancho disponible (en el celular, uno abajo del otro). */
+.admin-usuarios .filtro label {
+  flex: 1 1 200px;
+}

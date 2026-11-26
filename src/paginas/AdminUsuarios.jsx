@@ -3,13 +3,36 @@ import { SesionContexto } from '../contexto/SesionContexto';
 import { usePedidoConSesion } from '../contexto/usePedidoConSesion';
 import FormularioEmpleado from '../componentes/FormularioEmpleado';
 import Cargando from '../componentes/Cargando';
+import { normalizarTexto } from '../utilidades/busqueda';
 
+// Opciones del desplegable de rol. "valor" es el rol como lo guarda el backend.
+const ROLES = [
+  { valor: 'cliente', texto: 'Clientes' },
+  { valor: 'cocinero', texto: 'Cocineros' },
+  { valor: 'administrador', texto: 'Administradores' },
+];
+
+// true si el usuario tiene el rol elegido ('' = todos) y su nombre, apellido o email
+// contiene lo buscado. textoBuscado ya llega normalizado: se normaliza una sola vez,
+// no una vez por cada usuario.
+function usuarioCoincide(usuario, textoBuscado, rol) {
+  if (rol !== '' && usuario.rol !== rol) {
+    return false;
+  }
+  if (textoBuscado === '') {
+    return true;
+  }
+  const textoDelUsuario = normalizarTexto(usuario.nombre + ' ' + usuario.apellido + ' ' + usuario.email);
+  return textoDelUsuario.includes(textoBuscado);
+}
 function AdminUsuarios() {
   const [usuarios, setUsuarios] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState('');
   const [idCambiando, setIdCambiando] = useState('');
-
+  // Lo que se escribe en el buscador y el rol elegido en el desplegable.
+  const [busqueda, setBusqueda] = useState('');
+  const [rolElegido, setRolElegido] = useState('');
   const sesion = useContext(SesionContexto);
   const pedirConSesion = usePedidoConSesion();
 
@@ -71,9 +94,24 @@ function AdminUsuarios() {
     }
   }
 
+  function cambiarBusqueda(evento) {
+    setBusqueda(evento.target.value);
+  }
+
+  function cambiarRol(evento) {
+    setRolElegido(evento.target.value);
+  }
+
   if (cargando) {
     return <Cargando texto="Cargando los usuarios…" />;
   }
+
+  // La lista que se ve NO es otro estado: se calcula en cada dibujo a partir de la lista
+  // completa y de los filtros (valor derivado). Así nunca queda desactualizada.
+  const textoBuscado = normalizarTexto(busqueda);
+  const usuariosVisibles = usuarios.filter(function (usuario) {
+    return usuarioCoincide(usuario, textoBuscado, rolElegido);
+  });
 
   return (
     <div className="admin-usuarios">
@@ -83,44 +121,78 @@ function AdminUsuarios() {
 
       {error !== '' && <p className="error">{error}</p>}
 
-      <table>
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Email</th>
-            <th>Rol</th>
-            <th>Estado</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {usuarios.map(function (usuario) {
-            const esUnoMismo = usuario._id === sesion.idUsuario;
+          <div className="filtro">
+        <label>
+          Buscar
+          <input
+            type="search"
+            value={busqueda}
+            onChange={cambiarBusqueda}
+            placeholder="Nombre, apellido o email"
+          />
+        </label>
 
-            return (
-              <tr key={usuario._id}>
-                <td>{usuario.nombre} {usuario.apellido}</td>
-                <td>{usuario.email}</td>
-                <td>{usuario.rol}</td>
-                <td>{usuario.isActivo ? 'Activa' : 'Desactivada'}</td>
-                <td>
-                  {esUnoMismo && <span>(tu cuenta)</span>}
-                  {esUnoMismo === false && (
-                    <button
-                      type="button"
-                      onClick={function () { cambiarActivo(usuario); }}
-                      disabled={idCambiando === usuario._id}
-                    >
-                      {usuario.isActivo ? 'Desactivar' : 'Activar'}
-                    </button>
-                  )}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+        <label>
+          Rol
+          <select value={rolElegido} onChange={cambiarRol}>
+            <option value="">Todos</option>
+            {ROLES.map(function (rol) {
+              return (
+                <option key={rol.valor} value={rol.valor}>
+                  {rol.texto}
+                </option>
+              );
+            })}
+          </select>
+        </label>
+      </div>
+
+      <p className="nota">
+        Mostrando {usuariosVisibles.length} de {usuarios.length} usuarios.
+      </p>
+
+      {usuariosVisibles.length === 0 && <p>Ningún usuario coincide con la búsqueda.</p>}
+      {usuariosVisibles.length > 0 && (
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Email</th>
+              <th>Rol</th>
+              <th>Estado</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {usuariosVisibles.map(function (usuario) {
+              const esUnoMismo = usuario._id === sesion.idUsuario;
+
+              return (
+                <tr key={usuario._id}>
+                  <td>{usuario.nombre} {usuario.apellido}</td>
+                  <td>{usuario.email}</td>
+                  <td>{usuario.rol}</td>
+                  <td>{usuario.isActivo ? 'Activa' : 'Desactivada'}</td>
+                  <td>
+                    {esUnoMismo && <span>(tu cuenta)</span>}
+                    {esUnoMismo === false && (
+                      <button
+                        type="button"
+                        onClick={function () { cambiarActivo(usuario); }}
+                        disabled={idCambiando === usuario._id}
+                      >
+                        {usuario.isActivo ? 'Desactivar' : 'Activar'}
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      )}
     </div>
+
   );
 }
 

@@ -25,7 +25,7 @@ function AvisoDemora() {
 
   return (
     <p className="aviso-demora">
-      Está tardando más de lo normal: el servidor gratuito se apaga cuando nadie lo usa y tarda hasta un minuto en arrancar.
+      Está tardando más de lo normal, servidor despertándose.
     </p>
   );
 }
