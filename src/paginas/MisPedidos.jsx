@@ -4,6 +4,7 @@ import { usePedidoConSesion } from '../contexto/usePedidoConSesion';
 import TarjetaPedido from '../componentes/TarjetaPedido';
 import hamburguesaCerca from '../assets/hamburguesa-cerca.webp';
 import Cargando from '../componentes/Cargando';
+import AvisoDemora from '../componentes/AvisoDemora';
 
 function MisPedidos() {
   const [pedidos, setPedidos] = useState([]);
@@ -93,6 +94,8 @@ function MisPedidos() {
                 {idCancelando === pedido._id ? 'Cancelando…' : 'Cancelar pedido'}
               </button>
             )}
+            
+            {idCancelando === pedido._id && <AvisoDemora />}
           </TarjetaPedido>
         );
       })}

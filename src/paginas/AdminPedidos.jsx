@@ -3,6 +3,7 @@ import { usePedidoConSesion } from '../contexto/usePedidoConSesion';
 import TarjetaPedido from '../componentes/TarjetaPedido';
 import HistorialEstados from '../componentes/HistorialEstados';
 import { normalizarTexto, personaCoincide } from '../utilidades/busqueda';
+import AvisoDemora from '../componentes/AvisoDemora';
 
 // Los mismos estados que ESTADOS en el modelo Orden.js del backend.
 const ESTADOS = ['Pendiente', 'En preparación', 'Lista para retirar', 'Entregada', 'Cancelado'];
@@ -110,7 +111,7 @@ function AdminPedidos() {
           {cargando ? 'Buscando…' : 'Buscar'}
         </button>
       </div>
-
+      {cargando && <AvisoDemora />}
       {error !== '' && <p className="error">{error}</p>}
 
       {buscado === false && cargando === false && (

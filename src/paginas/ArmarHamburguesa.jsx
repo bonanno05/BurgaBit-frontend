@@ -9,6 +9,7 @@ import { SesionContexto } from '../contexto/SesionContexto';
 import { leerPedidoGuardado, guardarPedido, borrarPedidoGuardado } from '../utilidades/pedidoGuardado';
 import Cargando from '../componentes/Cargando';
 import ErrorConReintento from '../componentes/ErrorConReintento';
+import AvisoDemora from '../componentes/AvisoDemora';
 
 // La misma regla que MAX_POR_INGREDIENTE en clienteControlador.js del backend.
 const MAXIMO_POR_INGREDIENTE = 3;
@@ -280,6 +281,7 @@ function ArmarHamburguesa() {
       <button type="button" onClick={confirmarPedido} disabled={enviando}>
         {enviando ? 'Enviando pedido…' : 'Confirmar pedido'}
       </button>
+      {enviando && <AvisoDemora />}
     </>
   );
 
