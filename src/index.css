@@ -828,6 +828,8 @@ td button {
   width: 100%;
   max-width: 260px;
   margin: 16px auto;
+  /*los z-index de adentro solo se comparan entre ellos y ninguna capa puede pasar por delante de la barra de navegación.*/
+  isolation: isolate;
 }
 
 .hamburguesa img {
