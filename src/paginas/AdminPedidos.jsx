@@ -8,6 +8,36 @@ import AvisoDemora from '../componentes/AvisoDemora';
 // Los mismos estados que ESTADOS en el modelo Orden.js del backend.
 const ESTADOS = ['Pendiente', 'En preparación', 'Lista para retirar', 'Entregada', 'Cancelado'];
 
+// Opciones del desplegable de período.
+const PERIODOS = [
+  { valor: 'hoy', texto: 'Hoy' },
+  { valor: 'semana', texto: 'Últimos 7 días' },
+  { valor: 'todos', texto: 'Todos' },
+];
+
+// Devuelve desde qué momento se muestran los pedidos según el período elegido,
+// o null si se muestran todos. "Hoy" arranca a las 00:00 de hoy (hora de la compu);
+// "Últimos 7 días" arranca a las 00:00 de hace 6 días (hoy + los 6 anteriores).
+function inicioDelPeriodo(periodo) {
+  if (periodo === 'todos') {
+    return null;
+  }
+  const inicio = new Date();
+  inicio.setHours(0, 0, 0, 0);
+  if (periodo === 'semana') {
+    inicio.setDate(inicio.getDate() - 6);
+  }
+  return inicio;
+}
+
+// true si el pedido se hizo desde "inicio" en adelante (null = cualquier fecha).
+function pedidoEnPeriodo(pedido, inicio) {
+  if (inicio === null) {
+    return true;
+  }
+  return new Date(pedido.createdAt) >= inicio;
+}
+
 function AdminPedidos() {
   const [pedidos, setPedidos] = useState([]);
   const [cargando, setCargando] = useState(false);
@@ -19,6 +49,8 @@ function AdminPedidos() {
   const [cargandoDetalle, setCargandoDetalle] = useState(false);
   //filtra los pedidos que ya llegaron
   const [busqueda, setBusqueda] = useState('');
+  // El período elegido arranca en "Hoy", porque un local trabaja por día.
+  const [periodo, setPeriodo] = useState('hoy');
   const pedirConSesion = usePedidoConSesion();
 
   // Los pedidos se piden recién cuando el admin toca "Buscar" (no al abrir la pantalla).
@@ -81,11 +113,16 @@ function AdminPedidos() {
     setBusqueda(evento.target.value);
   }
 
-  // Los pedidos que se ven se calculan en cada dibujo (valor derivado), no son otro estado.
-  // Lo buscado se normaliza una sola vez, no una vez por pedido.
+  function cambiarPeriodo(evento) {
+    setPeriodo(evento.target.value);
+  }
+
+  // Los pedidos que se ven: los que coinciden con el cliente buscado Y están en el período.
+  // Lo buscado y el inicio del período se calculan una sola vez, no una vez por pedido.
   const textoBuscado = normalizarTexto(busqueda);
+  const inicio = inicioDelPeriodo(periodo);
   const pedidosVisibles = pedidos.filter(function (pedido) {
-    return personaCoincide(pedido.cliente, textoBuscado);
+    return personaCoincide(pedido.cliente, textoBuscado) && pedidoEnPeriodo(pedido, inicio);
   });
 
   return (
@@ -124,6 +161,20 @@ function AdminPedidos() {
       {pedidos.length > 0 && (
         <>
           <div className="filtro buscador">
+
+            <label>
+              Período
+              <select value={periodo} onChange={cambiarPeriodo}>
+                {PERIODOS.map(function (opcion) {
+                  return (
+                    <option key={opcion.valor} value={opcion.valor}>
+                      {opcion.texto}
+                    </option>
+                  );
+                })}
+              </select>
+            </label>
+
             <label>
               Cliente
               <input
@@ -139,7 +190,7 @@ function AdminPedidos() {
             Mostrando {pedidosVisibles.length} de {pedidos.length} pedidos.
           </p>
 
-          {pedidosVisibles.length === 0 && <p>Ningún pedido coincide con la búsqueda.</p>}
+          {pedidosVisibles.length === 0 && <p>Ningún pedido coincide con los filtros.</p>}
         </>
       )}
 
