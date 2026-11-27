@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import { Navigate } from 'react-router';
 import { SesionContexto } from '../contexto/SesionContexto';
-import SinPermiso from '../paginas/SinPermiso';
+import PaginaError from '../paginas/PaginaError';
 
 function RutaProtegida(props) {
   const sesion = useContext(SesionContexto);
@@ -11,7 +11,7 @@ function RutaProtegida(props) {
   }
 
   if (props.rolesPermitidos.includes(sesion.rol) === false) {
-        return <SinPermiso/>;
+    return <PaginaError codigo={403} />;
   }
 
   return props.children;

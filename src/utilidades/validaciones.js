@@ -1,5 +1,5 @@
 // Validaciones que se usan en varios formularios
-// son funcines puras que reciben un texto y devuelven true o false
+// Son funciones puras que reciben un texto y devuelven true o false
 
 // El mismo formato de email que pide el modelo Usuario del backend
 const FORMATO_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -26,7 +26,6 @@ export function esNumeroDesdeCero(texto) {
   const numero = Number(texto);
   return Number.isNaN(numero) === false && numero >= 0;
 }
-
 
 // ---------- Errores por campo (Login y Registro) ----------
 // Estas funciones revisan TODOS los campos de una vez y devuelven un objeto
@@ -89,4 +88,4 @@ export function erroresDeRegistro(datos) {
 // true si el objeto de errores tiene al menos un campo con error.
 export function hayErrores(errores) {
   return Object.keys(errores).length > 0;
-}
+}

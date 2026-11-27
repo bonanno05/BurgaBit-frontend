@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router';
 import { usePedidoConSesion } from '../contexto/usePedidoConSesion';
+import { useCargarDatos } from '../contexto/useCargarDatos';
 import { formatearPrecio } from '../utilidades/formato';
 import SelectorIngrediente from '../componentes/SelectorIngrediente';
 import ResumenPedido from '../componentes/ResumenPedido';
@@ -15,10 +16,11 @@ import AvisoDemora from '../componentes/AvisoDemora';
 const MAXIMO_POR_INGREDIENTE = 3;
 
 function ArmarHamburguesa() {
-  const [categorias, setCategorias] = useState([]);
-  const [ingredientes, setIngredientes] = useState([]);
-  const [cargando, setCargando] = useState(true);
-  const [error, setError] = useState('');
+  // El menú: las categorías (los pasos) y los ingredientes disponibles. Los dos pedidos salen al mismo tiempo.
+  const cargaCategorias = useCargarDatos('/categorias');
+  const cargaIngredientes = useCargarDatos('/ingredientes/menu');
+  const categorias = cargaCategorias.datos;
+  const ingredientes = cargaIngredientes.datos;
   const [seleccion, setSeleccion] = useState({});
   const [pasoActual, setPasoActual] = useState(0);
   const sesion = useContext(SesionContexto);
@@ -33,25 +35,6 @@ function ArmarHamburguesa() {
   // true: se ve el armador paso a paso. false: se ve la pantalla de "hamburguesa agregada".
   const [armando, setArmando] = useState(true);
   const navegar = useNavigate();
-
-  useEffect(function () {
-    async function cargarMenu() {
-      try {
-        const respuestas = await Promise.all([
-          pedirConSesion('/categorias', 'GET'),
-          pedirConSesion('/ingredientes/menu', 'GET'),
-        ]);
-        setCategorias(respuestas[0]);
-        setIngredientes(respuestas[1]);
-      } catch (fallo) {
-        setError(fallo.message);
-      } finally {
-        setCargando(false);
-      }
-    }
-
-    cargarMenu();
-  }, [pedirConSesion]);
 
   // Cada vez que cambian las hamburguesas agregadas (agregar o quitar), se guardan en el navegador.
   useEffect(function () {
@@ -84,7 +67,7 @@ function ArmarHamburguesa() {
     return suma;
   }
 
-    // Cuántas unidades de un ingrediente ya están en las hamburguesas agregadas al pedido.
+  // Cuántas unidades de un ingrediente ya están en las hamburguesas agregadas al pedido.
   function cantidadEnPedido(idIngrediente) {
     let suma = 0;
     for (const producto of productos) {
@@ -137,28 +120,35 @@ function ArmarHamburguesa() {
     setSeleccion(nuevaSeleccion);
   }
 
-  // Precio estimado de la hamburguesa. El que vale es el que calcula el backend al confirmar.
-  function precioEstimado() {
-    let total = 0;
+  // Lo que lleva la hamburguesa que se está armando: un item por ingrediente elegido.
+  // Sirve para todo: el dibujo usa nombre y cantidad, el precio usa precio y cantidad,
+  // y al agregarla al pedido se guarda tal cual.
+  function itemsElegidos() {
+    const items = [];
     for (const ingrediente of ingredientes) {
-      total = total + ingrediente.precio * cantidadElegida(ingrediente._id);
+      const cantidad = cantidadElegida(ingrediente._id);
+      if (cantidad > 0) {
+        items.push({
+          ingrediente: ingrediente._id,
+          nombre: ingrediente.nombre,
+          precio: ingrediente.precio,
+          cantidad: cantidad,
+        });
+      }
+    }
+    return items;
+  }
+
+  // Precio estimado de una lista de items. El que vale es el que calcula el backend al confirmar.
+  function precioDe(items) {
+    let total = 0;
+    for (const item of items) {
+      total = total + item.precio * item.cantidad;
     }
     return total;
   }
 
-  // Lo que lleva la hamburguesa, en el formato que pide DibujoHamburguesa.
-  function ingredientesElegidos() {
-    const lista = [];
-    for (const ingrediente of ingredientes) {
-      const cantidad = cantidadElegida(ingrediente._id);
-      if (cantidad > 0) {
-        lista.push({ nombre: ingrediente.nombre, cantidad: cantidad });
-      }
-    }
-    return lista;
-  }
-
-    // La hamburguesa está completa si tiene al menos un ingrediente y cumple el mínimo de todas las categorías.
+  // La hamburguesa está completa si tiene al menos un ingrediente y cumple el mínimo de todas las categorías.
   function hamburguesaCompleta() {
     if (Object.keys(seleccion).length === 0) {
       return false;
@@ -176,23 +166,15 @@ function ArmarHamburguesa() {
       return;
     }
 
-    const items = [];
-    for (const ingrediente of ingredientes) {
-      const cantidad = cantidadElegida(ingrediente._id);
-      if (cantidad > 0) {
-        items.push({
-          ingrediente: ingrediente._id,
-          nombre: ingrediente.nombre,
-          precio: ingrediente.precio,
-          cantidad: cantidad,
-        });
-      }
-    }
+    const items = itemsElegidos();
 
+    // El id solo tiene que ser distinto de los otros productos del pedido (se usa como key y para quitarlo).
+    // No se usa crypto.randomUUID() porque el navegador solo lo da en https o localhost:
+    // fallaba al probar la app desde el celular con la IP de la compu.
     const nuevoProducto = {
-      id: crypto.randomUUID(),
+      id: Date.now() + '-' + productos.length,
       items: items,
-      subtotalEstimado: precioEstimado(),
+      subtotalEstimado: precioDe(items),
     };
 
     setProductos([...productos, nuevoProducto]);
@@ -262,15 +244,18 @@ function ArmarHamburguesa() {
     }
   }
 
-  if (cargando) {
+  if (cargaCategorias.cargando || cargaIngredientes.cargando) {
     return <Cargando texto="Cargando el menú…" />;
   }
 
-  if (error !== '') {
-    return <ErrorConReintento mensaje={error} />;
+  if (cargaCategorias.error !== '') {
+    return <ErrorConReintento mensaje={cargaCategorias.error} />;
+  }
+  if (cargaIngredientes.error !== '') {
+    return <ErrorConReintento mensaje={cargaIngredientes.error} />;
   }
 
-    if (categorias.length === 0) {
+  if (categorias.length === 0) {
     return <p>Todavía no hay pasos cargados en el menú.</p>;
   }
 
@@ -310,6 +295,7 @@ function ArmarHamburguesa() {
   const cumpleMinimo = elegidos >= categoria.minimo;
   const esElPrimero = pasoActual === 0;
   const esElUltimo = pasoActual === categorias.length - 1;
+  const elegidosAhora = itemsElegidos();
 
   return (
     <div className="armar">
@@ -370,11 +356,11 @@ function ArmarHamburguesa() {
         </div>
 
         <aside className="armar-resumen">
-          <DibujoHamburguesa ingredientes={ingredientesElegidos()} />
+          <DibujoHamburguesa ingredientes={elegidosAhora} />
 
           <div className="armar-resumen-texto">
             <h3>Tu hamburguesa</h3>
-            <p className="total">{formatearPrecio(precioEstimado())}</p>
+            <p className="total">{formatearPrecio(precioDe(elegidosAhora))}</p>
           </div>
 
           <button
@@ -388,7 +374,6 @@ function ArmarHamburguesa() {
         </aside>
       </div>
 
-
       <ResumenPedido productos={productos} alQuitar={quitarDelPedido}>
         {botonConfirmar}
       </ResumenPedido>
@@ -396,4 +381,4 @@ function ArmarHamburguesa() {
   );
 }
 
-export default ArmarHamburguesa;
+export default ArmarHamburguesa;

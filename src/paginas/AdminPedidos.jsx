@@ -47,7 +47,7 @@ function AdminPedidos() {
   const [idAbierto, setIdAbierto] = useState('');
   const [detalle, setDetalle] = useState(null);
   const [cargandoDetalle, setCargandoDetalle] = useState(false);
-  //filtra los pedidos que ya llegaron
+  // Lo que se escribe en el buscador de cliente (filtra los pedidos que ya llegaron).
   const [busqueda, setBusqueda] = useState('');
   // El período elegido arranca en "Hoy", porque un local trabaja por día.
   const [periodo, setPeriodo] = useState('hoy');
@@ -156,7 +156,7 @@ function AdminPedidos() {
       )}
 
       {buscado && pedidos.length === 0 && <p>No hay pedidos para mostrar.</p>}
-    
+
       {/* El buscador aparece cuando ya hay pedidos, filtra los que trajo "Buscar". */}
       {pedidos.length > 0 && (
         <>
@@ -219,4 +219,4 @@ function AdminPedidos() {
   );
 }
 
-export default AdminPedidos;
+export default AdminPedidos;

@@ -1,13 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { usePedidoConSesion } from '../contexto/usePedidoConSesion';
+import { useCargarDatos } from '../contexto/useCargarDatos';
 import { formatearPrecio } from '../utilidades/formato';
 import FormularioIngrediente from '../componentes/FormularioIngrediente';
 import Cargando from '../componentes/Cargando';
+import ErrorConReintento from '../componentes/ErrorConReintento';
 
 function AdminIngredientes() {
-  const [ingredientes, setIngredientes] = useState([]);
-  const [categorias, setCategorias] = useState([]);
-  const [cargando, setCargando] = useState(true);
+  // Todos los ingredientes (también los no disponibles) y las categorías.
+  // Son dos hooks: los dos pedidos salen al mismo tiempo, como con Promise.all.
+  const cargaIngredientes = useCargarDatos('/ingredientes');
+  const cargaCategorias = useCargarDatos('/categorias');
+  const ingredientes = cargaIngredientes.datos;
+  const categorias = cargaCategorias.datos;
   const [error, setError] = useState('');
   const [aviso, setAviso] = useState('');
   const [idEditando, setIdEditando] = useState('');
@@ -15,41 +20,12 @@ function AdminIngredientes() {
 
   const pedirConSesion = usePedidoConSesion();
 
-  // Trae todos los ingredientes (también los no disponibles) y las categorías, al mismo tiempo.
-  useEffect(function () {
-    async function cargarDatos() {
-      try {
-        const respuestas = await Promise.all([
-          pedirConSesion('/ingredientes', 'GET'),
-          pedirConSesion('/categorias', 'GET'),
-        ]);
-        setIngredientes(respuestas[0]);
-        setCategorias(respuestas[1]);
-      } catch (fallo) {
-        setError(fallo.message);
-      } finally {
-        setCargando(false);
-      }
-    }
-
-    cargarDatos();
-  }, [pedirConSesion]);
-
-  // Después de cada cambio se vuelve a pedir la lista: así el stock es el real (los pedidos también lo descuentan).
-  async function recargarIngredientes() {
-    try {
-      const datos = await pedirConSesion('/ingredientes', 'GET');
-      setIngredientes(datos);
-    } catch (fallo) {
-      setError(fallo.message);
-    }
-  }
-
   function ingredienteGuardado(mensaje) {
     setError('');
     setAviso(mensaje);
     setIdEditando('');
-    recargarIngredientes();
+    // Después de cada cambio se vuelve a pedir la lista: así el stock es el real (los pedidos también lo descuentan).
+    cargaIngredientes.recargar();
   }
 
   function empezarEdicion(id) {
@@ -70,7 +46,7 @@ function AdminIngredientes() {
     try {
       const datos = await pedirConSesion(ruta, metodo, cuerpo);
       setAviso(datos.msg);
-      await recargarIngredientes();
+      await cargaIngredientes.recargar();
     } catch (fallo) {
       setError(fallo.message);
     } finally {
@@ -127,8 +103,16 @@ function AdminIngredientes() {
     return 'En el menú';
   }
 
-  if (cargando) {
+  if (cargaIngredientes.cargando || cargaCategorias.cargando) {
     return <Cargando texto="Cargando los ingredientes…" />;
+  }
+
+  // Si no se pudo traer alguna de las dos listas, se muestra el error solo.
+  if (cargaIngredientes.error !== '') {
+    return <ErrorConReintento mensaje={cargaIngredientes.error} />;
+  }
+  if (cargaCategorias.error !== '') {
+    return <ErrorConReintento mensaje={cargaCategorias.error} />;
   }
 
   let ingredienteEditando = null;
@@ -216,4 +200,4 @@ function AdminIngredientes() {
   );
 }
 
-export default AdminIngredientes;
+export default AdminIngredientes;

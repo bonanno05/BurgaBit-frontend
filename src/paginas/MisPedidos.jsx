@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react';
-import { useLocation, Link } from 'react-router';
+import { useLocation, useNavigate, Link } from 'react-router';
 import { usePedidoConSesion } from '../contexto/usePedidoConSesion';
+import { useCargarDatos } from '../contexto/useCargarDatos';
 import TarjetaPedido from '../componentes/TarjetaPedido';
 import hamburguesaCerca from '../assets/hamburguesa-cerca.webp';
 import Cargando from '../componentes/Cargando';
+import ErrorConReintento from '../componentes/ErrorConReintento';
 import AvisoDemora from '../componentes/AvisoDemora';
 
 function MisPedidos() {
-  const [pedidos, setPedidos] = useState([]);
-  const [cargando, setCargando] = useState(true);
+  const carga = useCargarDatos('/cliente');
+  const pedidos = carga.datos;
   const [error, setError] = useState('');
   const [idCancelando, setIdCancelando] = useState('');
 
@@ -21,21 +23,15 @@ function MisPedidos() {
   const [avisoConfirmado, setAvisoConfirmado] = useState(vieneDeConfirmar);
 
   const pedirConSesion = usePedidoConSesion();
+  const navegar = useNavigate();
 
+  // El aviso ya quedó guardado en avisoConfirmado: se borra el state de la dirección.
+  // Si no, el navegador lo recuerda y el aviso vuelve a salir cada vez que se recarga la página.
   useEffect(function () {
-    async function cargarPedidos() {
-      try {
-        const datos = await pedirConSesion('/cliente', 'GET');
-        setPedidos(datos);
-      } catch (fallo) {
-        setError(fallo.message);
-      } finally {
-        setCargando(false);
-      }
+    if (vieneDeConfirmar) {
+      navegar('/mis-pedidos', { replace: true });
     }
-
-    cargarPedidos();
-  }, [pedirConSesion]);
+  }, [vieneDeConfirmar, navegar]);
 
   async function cancelarPedido(id) {
     const confirmado = window.confirm('¿Seguro que querés cancelar este pedido?');
@@ -50,13 +46,15 @@ function MisPedidos() {
     try {
       const pedidoActualizado = await pedirConSesion('/cliente/' + id + '/cancelar', 'PATCH');
 
-      const pedidosNuevos = pedidos.map(function (pedido) {
-        if (pedido._id === id) {
-          return pedidoActualizado;
-        }
-        return pedido;
+      // Se le pasa una función: React le da la lista más nueva (por si cambió mientras se esperaba).
+      carga.setDatos(function (anteriores) {
+        return anteriores.map(function (pedido) {
+          if (pedido._id === id) {
+            return pedidoActualizado;
+          }
+          return pedido;
+        });
       });
-      setPedidos(pedidosNuevos);
     } catch (fallo) {
       setError(fallo.message);
     } finally {
@@ -64,8 +62,13 @@ function MisPedidos() {
     }
   }
 
-  if (cargando) {
+  if (carga.cargando) {
     return <Cargando texto="Cargando tus pedidos…" />;
+  }
+
+  // Si no se pudo traer la lista, se muestra el error solo (y no "Todavía no hiciste ningún pedido").
+  if (carga.error !== '') {
+    return <ErrorConReintento mensaje={carga.error} />;
   }
 
   return (
@@ -90,11 +93,16 @@ function MisPedidos() {
         return (
           <TarjetaPedido key={pedido._id} pedido={pedido}>
             {pedido.estado === 'Pendiente' && (
-              <button className="boton-peligro" onClick={function () { cancelarPedido(pedido._id); }} disabled={idCancelando === pedido._id}>
+              <button
+                type="button"
+                className="boton-peligro"
+                onClick={function () { cancelarPedido(pedido._id); }}
+                disabled={idCancelando === pedido._id}
+              >
                 {idCancelando === pedido._id ? 'Cancelando…' : 'Cancelar pedido'}
               </button>
             )}
-            
+
             {idCancelando === pedido._id && <AvisoDemora />}
           </TarjetaPedido>
         );

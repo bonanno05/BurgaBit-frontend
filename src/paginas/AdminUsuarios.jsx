@@ -1,8 +1,10 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useContext } from 'react';
 import { SesionContexto } from '../contexto/SesionContexto';
 import { usePedidoConSesion } from '../contexto/usePedidoConSesion';
+import { useCargarDatos } from '../contexto/useCargarDatos';
 import FormularioEmpleado from '../componentes/FormularioEmpleado';
 import Cargando from '../componentes/Cargando';
+import ErrorConReintento from '../componentes/ErrorConReintento';
 import { normalizarTexto, personaCoincide } from '../utilidades/busqueda';
 
 // Opciones del desplegable de rol. "valor" es el rol como lo guarda el backend.
@@ -21,9 +23,11 @@ function usuarioCoincide(usuario, textoBuscado, rol) {
   }
   return personaCoincide(usuario, textoBuscado);
 }
+
 function AdminUsuarios() {
-  const [usuarios, setUsuarios] = useState([]);
-  const [cargando, setCargando] = useState(true);
+  // Todos los usuarios (sin contraseña), ordenados por rol y apellido.
+  const carga = useCargarDatos('/admin/usuarios');
+  const usuarios = carga.datos;
   const [error, setError] = useState('');
   const [idCambiando, setIdCambiando] = useState('');
   // Lo que se escribe en el buscador y el rol elegido en el desplegable.
@@ -31,32 +35,6 @@ function AdminUsuarios() {
   const [rolElegido, setRolElegido] = useState('');
   const sesion = useContext(SesionContexto);
   const pedirConSesion = usePedidoConSesion();
-
-  // Trae todos los usuarios (sin contraseña), ordenados por rol y apellido.
-  useEffect(function () {
-    async function cargarUsuarios() {
-      try {
-        const datos = await pedirConSesion('/admin/usuarios', 'GET');
-        setUsuarios(datos);
-      } catch (fallo) {
-        setError(fallo.message);
-      } finally {
-        setCargando(false);
-      }
-    }
-
-    cargarUsuarios();
-  }, [pedirConSesion]);
-
-  // Se llama cuando el formulario crea una cuenta: vuelve a pedir la lista para que aparezca.
-  async function recargarUsuarios() {
-    try {
-      const datos = await pedirConSesion('/admin/usuarios', 'GET');
-      setUsuarios(datos);
-    } catch (fallo) {
-      setError(fallo.message);
-    }
-  }
 
   // Activa o desactiva una cuenta (el backend la da vuelta: si estaba activa la desactiva y al revés).
   async function cambiarActivo(usuario) {
@@ -76,13 +54,15 @@ function AdminUsuarios() {
       await pedirConSesion('/admin/usuario/' + usuario._id, 'PATCH');
 
       // La respuesta solo trae un mensaje: se da vuelta isActivo en la copia local.
-      const usuariosNuevos = usuarios.map(function (otro) {
-        if (otro._id === usuario._id) {
-          return { ...otro, isActivo: !otro.isActivo };
-        }
-        return otro;
+      // Con una función, React le pasa la lista más nueva (por si cambió mientras se esperaba).
+      carga.setDatos(function (anteriores) {
+        return anteriores.map(function (otro) {
+          if (otro._id === usuario._id) {
+            return { ...otro, isActivo: !otro.isActivo };
+          }
+          return otro;
+        });
       });
-      setUsuarios(usuariosNuevos);
     } catch (fallo) {
       setError(fallo.message);
     } finally {
@@ -98,8 +78,13 @@ function AdminUsuarios() {
     setRolElegido(evento.target.value);
   }
 
-  if (cargando) {
+  if (carga.cargando) {
     return <Cargando texto="Cargando los usuarios…" />;
+  }
+
+  // Si no se pudo traer la lista, se muestra el error solo (y no "Mostrando 0 de 0").
+  if (carga.error !== '') {
+    return <ErrorConReintento mensaje={carga.error} />;
   }
 
   // La lista que se ve NO es otro estado: se calcula en cada dibujo a partir de la lista
@@ -113,11 +98,11 @@ function AdminUsuarios() {
     <div className="admin-usuarios">
       <h2>Usuarios</h2>
 
-      <FormularioEmpleado alCrear={recargarUsuarios} />
+      <FormularioEmpleado alCrear={carga.recargar} />
 
       {error !== '' && <p className="error">{error}</p>}
 
-          <div className="filtro">
+      <div className="filtro">
         <label>
           Buscar
           <input
@@ -172,7 +157,12 @@ function AdminUsuarios() {
                   <td className="acciones">
                     {esUnoMismo && <span>(tu cuenta)</span>}
                     {esUnoMismo === false && (
-                      <button className={usuario.isActivo ? 'boton-peligro' : ''} type="button" onClick={function () { cambiarActivo(usuario); }} disabled={idCambiando === usuario._id}>
+                      <button
+                        type="button"
+                        className={usuario.isActivo ? 'boton-peligro' : ''}
+                        onClick={function () { cambiarActivo(usuario); }}
+                        disabled={idCambiando === usuario._id}
+                      >
                         {usuario.isActivo ? 'Desactivar' : 'Activar'}
                       </button>
                     )}
@@ -184,8 +174,7 @@ function AdminUsuarios() {
         </table>
       )}
     </div>
-
   );
 }
 
-export default AdminUsuarios;
+export default AdminUsuarios;

@@ -1,5 +1,6 @@
 import { Link } from 'react-router';
 
+// Inicio del admin: un acceso a cada sección. No pide nada al backend:
 // los datos aparecen cuando el admin entra a una sección.
 function AdminInicio() {
   return (

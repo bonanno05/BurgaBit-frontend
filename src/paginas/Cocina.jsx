@@ -1,8 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { usePedidoConSesion } from '../contexto/usePedidoConSesion';
+import { useCargarDatos } from '../contexto/useCargarDatos';
 import TarjetaPedido from '../componentes/TarjetaPedido';
 import Cargando from '../componentes/Cargando';
+import ErrorConReintento from '../componentes/ErrorConReintento';
 import AvisoDemora from '../componentes/AvisoDemora';
+
 // A qué estado pasa cada pedido con el botón de avanzar.
 // Son las mismas transiciones que TRANSICIONES en cocineroControlador.js del backend (sin Cancelado).
 const SIGUIENTE_ESTADO = {
@@ -12,42 +15,21 @@ const SIGUIENTE_ESTADO = {
 };
 
 function Cocina() {
-  const [pedidos, setPedidos] = useState([]);
-  const [cargando, setCargando] = useState(true);
+  // Los pedidos activos (Pendiente, En preparación y Lista para retirar), del más viejo al más nuevo.
+  const carga = useCargarDatos('/cocinero');
+  const pedidos = carga.datos;
   const [error, setError] = useState('');
   const [idCambiando, setIdCambiando] = useState('');
   const [actualizando, setActualizando] = useState(false);
 
   const pedirConSesion = usePedidoConSesion();
 
-  // Trae los pedidos activos (Pendiente, En preparación y Lista para retirar), del más viejo al más nuevo.
-  useEffect(function () {
-    async function cargarPedidos() {
-      try {
-        const datos = await pedirConSesion('/cocinero', 'GET');
-        setPedidos(datos);
-      } catch (fallo) {
-        setError(fallo.message);
-      } finally {
-        setCargando(false);
-      }
-    }
-
-    cargarPedidos();
-  }, [pedirConSesion]);
-
   // Botón "Actualizar": vuelve a pedir la lista para ver los pedidos nuevos.
   async function actualizar() {
     setError('');
     setActualizando(true);
-    try {
-      const datos = await pedirConSesion('/cocinero', 'GET');
-      setPedidos(datos);
-    } catch (fallo) {
-      setError(fallo.message);
-    } finally {
-      setActualizando(false);
-    }
+    await carga.recargar();
+    setActualizando(false);
   }
 
   // Manda el cambio al backend y actualiza la lista sin volver a pedirla entera.
@@ -59,22 +41,23 @@ function Cocina() {
       const actualizado = await pedirConSesion('/cocinero/' + id, 'PATCH', cuerpo);
       const nuevoEstado = actualizado.estado;
 
-      if (nuevoEstado === 'Entregada' || nuevoEstado === 'Cancelado') {
-        // Ya no está activo: sale de la lista de la cocina.
-        const pedidosNuevos = pedidos.filter(function (pedido) {
-          return pedido._id !== id;
-        });
-        setPedidos(pedidosNuevos);
-      } else {
+      // Se le pasa una función a setDatos: React le da la lista más nueva. Así, si se tocaron
+      // dos pedidos seguidos, el segundo cambio no pisa al primero.
+      carga.setDatos(function (anteriores) {
+        if (nuevoEstado === 'Entregada' || nuevoEstado === 'Cancelado') {
+          // Ya no está activo: sale de la lista de la cocina.
+          return anteriores.filter(function (pedido) {
+            return pedido._id !== id;
+          });
+        }
         // Sigue activo: se cambia solo el estado, para no perder los datos del cliente.
-        const pedidosNuevos = pedidos.map(function (pedido) {
+        return anteriores.map(function (pedido) {
           if (pedido._id === id) {
             return { ...pedido, estado: nuevoEstado };
           }
           return pedido;
         });
-        setPedidos(pedidosNuevos);
-      }
+      });
     } catch (fallo) {
       setError(fallo.message);
     } finally {
@@ -101,8 +84,13 @@ function Cocina() {
     cambiarEstado(pedido._id, { estado: 'Cancelado', motivoCancelacion: motivo.trim() });
   }
 
-  if (cargando) {
+  if (carga.cargando) {
     return <Cargando texto="Cargando los pedidos…" />;
+  }
+
+  // Si no se pudo traer la lista, se muestra el error solo (y no "No hay pedidos para preparar").
+  if (carga.error !== '') {
+    return <ErrorConReintento mensaje={carga.error} />;
   }
 
   return (

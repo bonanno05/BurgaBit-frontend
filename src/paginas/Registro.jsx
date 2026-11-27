@@ -25,7 +25,6 @@ function Registro() {
     setErrores(nuevosErrores);
   }
 
-
   function cambiarNombre(evento) {
     setNombre(evento.target.value);
     sacarError('nombre');
@@ -66,7 +65,7 @@ function Registro() {
     if (hayErrores(nuevosErrores)) {
       return;
     }
-  
+
     setCargando(true);
 
     const emailLimpio = email.trim().toLowerCase();
@@ -120,7 +119,7 @@ function Registro() {
           <button type="submit" disabled={cargando}>
             {cargando ? 'Creando cuenta…' : 'Crear cuenta'}
           </button>
-          
+
           {cargando && <AvisoDemora />}
         </form>
 
@@ -132,4 +131,4 @@ function Registro() {
   );
 }
 
-export default Registro;
+export default Registro;

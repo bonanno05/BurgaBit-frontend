@@ -1,48 +1,21 @@
-import { useState, useEffect } from 'react';
-import { usePedidoConSesion } from '../contexto/usePedidoConSesion';
+import { useState } from 'react';
+import { useCargarDatos } from '../contexto/useCargarDatos';
 import FormularioCategoria from '../componentes/FormularioCategoria';
 import Cargando from '../componentes/Cargando';
+import ErrorConReintento from '../componentes/ErrorConReintento';
 
 function AdminCategorias() {
-  const [categorias, setCategorias] = useState([]);
-  const [cargando, setCargando] = useState(true);
-  const [error, setError] = useState('');
+  // Todas las categorías, ordenadas por paso.
+  const carga = useCargarDatos('/categorias');
+  const categorias = carga.datos;
   const [aviso, setAviso] = useState('');
   const [idEditando, setIdEditando] = useState('');
 
-  const pedirConSesion = usePedidoConSesion();
-
-  // Trae todas las categorías, ordenadas por paso.
-  useEffect(function () {
-    async function cargarCategorias() {
-      try {
-        const datos = await pedirConSesion('/categorias', 'GET');
-        setCategorias(datos);
-      } catch (fallo) {
-        setError(fallo.message);
-      } finally {
-        setCargando(false);
-      }
-    }
-
-    cargarCategorias();
-  }, [pedirConSesion]);
-
-  async function recargarCategorias() {
-    try {
-      const datos = await pedirConSesion('/categorias', 'GET');
-      setCategorias(datos);
-    } catch (fallo) {
-      setError(fallo.message);
-    }
-  }
-
   // El formulario avisa que guardó: se muestra el mensaje del backend, se cierra la edición y se recarga la lista.
   function categoriaGuardada(mensaje) {
-    setError('');
     setAviso(mensaje);
     setIdEditando('');
-    recargarCategorias();
+    carga.recargar();
   }
 
   function empezarEdicion(id) {
@@ -54,8 +27,13 @@ function AdminCategorias() {
     setIdEditando('');
   }
 
-  if (cargando) {
+  if (carga.cargando) {
     return <Cargando texto="Cargando las categorías…" />;
+  }
+
+  // Si no se pudo traer la lista, se muestra el error solo (y no "Todavía no hay categorías").
+  if (carga.error !== '') {
+    return <ErrorConReintento mensaje={carga.error} />;
   }
 
   // La categoría que se está editando (o null si se está creando una nueva).
@@ -86,7 +64,6 @@ function AdminCategorias() {
       />
 
       {aviso !== '' && <p className="exito">{aviso}</p>}
-      {error !== '' && <p className="error">{error}</p>}
 
       {categorias.length === 0 && <p>Todavía no hay categorías.</p>}
 
@@ -128,4 +105,4 @@ function AdminCategorias() {
   );
 }
 
-export default AdminCategorias;
+export default AdminCategorias;

@@ -20,15 +20,15 @@ function FormularioEmpleado(props) {
     setMailCreado('');
 
     if (nombre.trim() === '') {
-      setError('El nombre es obligatorio');
+      setError('El nombre es obligatorio.');
       return;
     }
     if (apellido.trim() === '') {
-      setError('El apellido es obligatorio');
+      setError('El apellido es obligatorio.');
       return;
     }
     if (password.length < 8) {
-      setError('La contraseña debe tener al menos 8 caracteres');
+      setError('La contraseña debe tener al menos 8 caracteres.');
       return;
     }
 
@@ -111,4 +111,4 @@ function FormularioEmpleado(props) {
   );
 }
 
-export default FormularioEmpleado;
+export default FormularioEmpleado;

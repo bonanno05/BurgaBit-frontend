@@ -46,27 +46,27 @@ function FormularioCategoria(props) {
     const nombreLimpio = nombre.trim().toLowerCase();
 
     if (nombreLimpio === '') {
-      setError('El nombre es obligatorio');
+      setError('El nombre es obligatorio.');
       return;
     }
     if (nombreRepetido(nombreLimpio)) {
-      setError('Ya existe una categoría con ese nombre');
+      setError('Ya existe una categoría con ese nombre.');
       return;
     }
     if (esEnteroDesde(paso, 1) === false) {
-      setError('El paso tiene que ser un número entero desde 1');
+      setError('El paso tiene que ser un número entero desde 1.');
       return;
     }
     if (esEnteroDesde(minimo, 0) === false) {
-      setError('El mínimo tiene que ser un número entero desde 0');
+      setError('El mínimo tiene que ser un número entero desde 0.');
       return;
     }
     if (esEnteroDesde(maximo, 1) === false) {
-      setError('El máximo tiene que ser un número entero desde 1');
+      setError('El máximo tiene que ser un número entero desde 1.');
       return;
     }
     if (Number(minimo) > Number(maximo)) {
-      setError('El mínimo no puede ser mayor que el máximo');
+      setError('El mínimo no puede ser mayor que el máximo.');
       return;
     }
 
@@ -160,4 +160,4 @@ function FormularioCategoria(props) {
   );
 }
 
-export default FormularioCategoria;
+export default FormularioCategoria;

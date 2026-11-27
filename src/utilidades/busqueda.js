@@ -4,7 +4,6 @@ export function normalizarTexto(texto) {
   return texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
 }
 
-
 // true si la persona (un usuario, o el cliente de un pedido) tiene lo buscado
 // en su nombre, apellido o email. textoBuscado tiene que llegar ya normalizado.
 // Si no hay búsqueda, coincide siempre. Si no hay persona (por ejemplo, un pedido
@@ -18,4 +17,4 @@ export function personaCoincide(persona, textoBuscado) {
   }
   const textoDeLaPersona = normalizarTexto(persona.nombre + ' ' + persona.apellido + ' ' + persona.email);
   return textoDeLaPersona.includes(textoBuscado);
-}
+}

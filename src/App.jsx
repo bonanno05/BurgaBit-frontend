@@ -15,7 +15,7 @@ import AdminCategorias from './paginas/AdminCategorias';
 import AdminIngredientes from './paginas/AdminIngredientes';
 import AdminInicio from './paginas/AdminInicio';
 import Bienvenida from './paginas/Bienvenida';
-import NoEncontrado from './paginas/NoEncontrado';
+import PaginaError from './paginas/PaginaError';
 
 function App() {
   const sesion = useContext(SesionContexto);
@@ -39,7 +39,7 @@ function App() {
             path="/bienvenida"
             element={haySesion ? <Navigate to={inicio} replace /> : <Bienvenida />}
           />
-          
+
           <Route
             path="/registro"
             element={haySesion ? <Navigate to={inicio} replace /> : <Registro />}
@@ -49,7 +49,7 @@ function App() {
             path="/armar"
             element={
               <RutaProtegida rolesPermitidos={['cliente']}>
-                <ArmarHamburguesa/>
+                <ArmarHamburguesa />
               </RutaProtegida>
             }
           />
@@ -57,7 +57,7 @@ function App() {
             path="/mis-pedidos"
             element={
               <RutaProtegida rolesPermitidos={['cliente']}>
-                <MisPedidos/>
+                <MisPedidos />
               </RutaProtegida>
             }
           />
@@ -66,11 +66,10 @@ function App() {
             path="/cocina"
             element={
               <RutaProtegida rolesPermitidos={['cocinero']}>
-                <Cocina/>
+                <Cocina />
               </RutaProtegida>
             }
           />
-
 
           <Route
             path="/admin"
@@ -85,7 +84,7 @@ function App() {
             path="/admin/pedidos"
             element={
               <RutaProtegida rolesPermitidos={['administrador']}>
-                <AdminPedidos/>
+                <AdminPedidos />
               </RutaProtegida>
             }
           />
@@ -93,7 +92,7 @@ function App() {
             path="/admin/usuarios"
             element={
               <RutaProtegida rolesPermitidos={['administrador']}>
-                <AdminUsuarios/>
+                <AdminUsuarios />
               </RutaProtegida>
             }
           />
@@ -101,7 +100,7 @@ function App() {
             path="/admin/ingredientes"
             element={
               <RutaProtegida rolesPermitidos={['administrador']}>
-                <AdminIngredientes/>
+                <AdminIngredientes />
               </RutaProtegida>
             }
           />
@@ -109,16 +108,16 @@ function App() {
             path="/admin/categorias"
             element={
               <RutaProtegida rolesPermitidos={['administrador']}>
-                <AdminCategorias/>
+                <AdminCategorias />
               </RutaProtegida>
             }
           />
 
-            <Route path="*" element={<NoEncontrado />} />
+          <Route path="*" element={<PaginaError codigo={404} />} />
         </Routes>
       </main>
     </>
   );
 }
 
-export default App;
+export default App;

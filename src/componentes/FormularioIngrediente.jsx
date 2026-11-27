@@ -45,23 +45,23 @@ function FormularioIngrediente(props) {
     const nombreLimpio = nombre.trim().toLowerCase();
 
     if (nombreLimpio === '') {
-      setError('El nombre es obligatorio');
+      setError('El nombre es obligatorio.');
       return;
     }
     if (nombreRepetido(nombreLimpio)) {
-      setError('Ya existe un ingrediente con ese nombre');
+      setError('Ya existe un ingrediente con ese nombre.');
       return;
     }
     if (esNumeroDesdeCero(precio) === false) {
-      setError('El precio tiene que ser un número desde 0');
+      setError('El precio tiene que ser un número desde 0.');
       return;
     }
     if (esEnteroDesde(cantidad, 0) === false) {
-      setError('El stock tiene que ser un número entero desde 0');
+      setError('El stock tiene que ser un número entero desde 0.');
       return;
     }
     if (categoria === '') {
-      setError('Elegí una categoría');
+      setError('Elegí una categoría.');
       return;
     }
 
@@ -168,4 +168,4 @@ function FormularioIngrediente(props) {
   );
 }
 
-export default FormularioIngrediente;
+export default FormularioIngrediente;
