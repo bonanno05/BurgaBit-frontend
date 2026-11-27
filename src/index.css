@@ -2,12 +2,15 @@
    Estilos de BurgaBit
    Se escriben primero para celular (pantalla angosta) y después,
    con @media, se agregan los cambios para pantallas más anchas.
+   Ordenados por tema: primero lo general (colores, textos, botones,
+   formularios, mensajes) y después cada parte de la app.
    ========================================================= */
 
 /* ---------- 1. Colores y medidas que se repiten (variables) ---------- */
 :root {
   --color-fondo: #1c0a2b;
   --color-superficie: #2a1040;
+  --color-negro: #0b0610;
   --color-texto: #f7f0fc;
   --color-suave: #c3add6;
   --color-borde: #47265f;
@@ -15,6 +18,7 @@
   --color-principal-oscuro: #86198f;
   --color-acento: #e879f9;
   --color-destacado: #fbbf24;
+  --color-peligro: #f87171;
   --color-error: #b91c1c;
   --color-error-fondo: #fef2f2;
   --color-exito: #15803d;
@@ -26,7 +30,7 @@
   --sombra: 0 2px 10px rgba(0, 0, 0, 0.4);
 }
 
-/* ---------- 2. Base ---------- */
+/* ---------- 2. Base y títulos ---------- */
 * {
   box-sizing: border-box;
 }
@@ -50,6 +54,19 @@ h3 {
   font-size: 1.15rem;
 }
 
+/* Lilita One viene de Google Fonts (se carga en index.html). Tiene un solo grosor,
+   por eso font-weight: 400: si se le pide negrita, el navegador la "engorda" a mano y se ve fea. */
+h1,
+h2,
+h3,
+.barra-marca,
+.bienvenida-titulo,
+.pagina-error-codigo {
+  font-family: var(--fuente-titulos);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
 a {
   color: var(--color-acento);
 }
@@ -61,7 +78,252 @@ a {
   padding: 16px;
 }
 
-/* ---------- 3. Barra de navegación ---------- */
+@media (min-width: 700px) {
+  .contenido {
+    padding: 24px;
+  }
+}
+
+/* ---------- 3. Botones ---------- */
+button {
+  font: inherit;
+  padding: 8px 14px;
+  border: none;
+  border-radius: var(--radio);
+  background-color: var(--color-acento);
+  color: #ffffff;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: var(--color-principal-oscuro);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Botón secundario: solo con borde, para acciones que no son la principal. */
+.boton-secundario {
+  width: 100%;
+  background-color: transparent;
+  color: var(--color-acento);
+  border: 1px solid var(--color-acento);
+}
+
+.boton-secundario:hover {
+  background-color: var(--color-borde);
+}
+
+/* Botón dorado (color cheddar) con letra oscura para que se lea. */
+.boton-dorado {
+  background-color: var(--color-destacado);
+  color: var(--color-fondo);
+  font-weight: 700;
+}
+
+.boton-dorado:hover {
+  background-color: #f59e0b;
+}
+
+/* Cancelar un pedido, desactivar una cuenta, dar de baja un ingrediente:
+   borde y texto rojos sobre fondo transparente, para distinguirlos de las acciones normales. */
+.boton-peligro {
+  background-color: transparent;
+  color: var(--color-peligro);
+  border: 1px solid var(--color-peligro);
+}
+
+.boton-peligro:hover {
+  background-color: var(--color-peligro);
+  color: var(--color-fondo);
+}
+
+/* Links con forma de botón ("Armar mi primera hamburguesa", "Volver al inicio"). */
+.sin-pedidos a,
+.pagina-error a {
+  display: inline-block;
+  padding: 10px 20px;
+  border-radius: var(--radio);
+  background-color: var(--color-principal);
+  color: #ffffff;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.sin-pedidos a:hover,
+.pagina-error a:hover {
+  background-color: var(--color-principal-oscuro);
+}
+
+/* ---------- 4. Formularios y filtros ---------- */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-weight: 600;
+}
+
+input,
+select {
+  font: inherit;
+  padding: 8px 10px;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  background-color: var(--color-fondo);
+  color: var(--color-texto);
+}
+
+input:focus,
+select:focus {
+  outline: 2px solid var(--color-acento);
+  outline-offset: 1px;
+}
+
+/* Error debajo de cada campo (Login y Registro). El margen negativo lo acerca al campo, porque el form tiene gap. */
+.error-campo {
+  margin: -4px 0 4px;
+  font-size: 0.9rem;
+  color: var(--color-peligro);
+}
+
+/* El campo con error se marca con borde rojo. aria-invalid lo pone React según haya error o no. */
+input[aria-invalid="true"] {
+  border-color: var(--color-peligro);
+}
+
+/* Filtros de Usuarios y Pedidos del admin: los campos en una fila (si no entran, bajan). */
+.filtro {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+/* El buscador y los desplegables ocupan el ancho disponible (en el celular, uno abajo del otro). */
+.admin-usuarios .filtro label,
+.buscador label {
+  flex: 1 1 200px;
+}
+
+/* Formularios del admin en pantallas anchas: los campos en dos columnas. */
+@media (min-width: 700px) {
+  .formulario-empleado,
+  .formulario-categoria,
+  .formulario-ingrediente {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  /* El título y los mensajes ocupan las dos columnas. */
+  .formulario-empleado > h3,
+  .formulario-empleado > p,
+  .formulario-categoria > h3,
+  .formulario-categoria > p,
+  .formulario-ingrediente > h3,
+  .formulario-ingrediente > p {
+    grid-column: 1 / -1;
+  }
+
+  /* Los botones, del tamaño de su texto (no estirados a lo ancho de la columna). */
+  .formulario-empleado > button,
+  .formulario-categoria > button,
+  .formulario-ingrediente > button {
+    justify-self: start;
+  }
+}
+
+/* ---------- 5. Mensajes, carga y aviso de servidor dormido ---------- */
+.error,
+.exito,
+.aviso {
+  margin: 8px 0;
+  padding: 8px 12px;
+  border-radius: var(--radio);
+}
+
+.error {
+  color: var(--color-error);
+  background-color: var(--color-error-fondo);
+}
+
+.exito {
+  color: var(--color-exito);
+  background-color: var(--color-exito-fondo);
+}
+
+.aviso {
+  color: var(--color-aviso);
+  background-color: var(--color-aviso-fondo);
+}
+
+.nota {
+  color: var(--color-suave);
+  font-size: 0.9rem;
+}
+
+/* Pantalla de carga (círculo que gira, texto y, si tarda, el aviso) y error con "Reintentar". */
+.cargando,
+.error-reintento {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 48px 16px;
+  text-align: center;
+}
+
+.cargando p {
+  margin: 0;
+  color: var(--color-suave);
+}
+
+/* El círculo: un borde gris con la parte de arriba dorada, girando. */
+.cargando-icono {
+  width: 36px;
+  height: 36px;
+  border: 4px solid var(--color-borde);
+  border-top-color: var(--color-destacado);
+  border-radius: 50%;
+  animation: girar-carga 0.9s linear infinite;
+}
+
+@keyframes girar-carga {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* El aviso del servidor dormido (en la pantalla de carga y abajo de los botones que esperan).
+   ".cargando .aviso-demora" hace falta: sin él, ".cargando p" (que pesa más que una sola clase)
+   le sacaría el margen y el color dorado al aviso que está dentro de la pantalla de carga. */
+.cargando .aviso-demora,
+.aviso-demora {
+  max-width: 420px;
+  margin: 8px 0 0;
+  font-size: 0.9rem;
+  color: var(--color-destacado);
+}
+
+/* Si la persona pidió menos movimiento, el círculo gira mucho más lento. */
+@media (prefers-reduced-motion: reduce) {
+  .cargando-icono {
+    animation-duration: 3s;
+  }
+}
+
+/* ---------- 6. Barra de navegación ---------- */
 /* Negra como el recuadro de la hamburguesa, con una línea dorada abajo.
    En celular va en dos filas: arriba el logo y "Cerrar sesión", abajo las secciones
    (si no entran en una fila, bajan de renglón: así se ven todas). */
@@ -74,19 +336,34 @@ a {
   align-items: center;
   gap: 8px;
   padding: 10px 16px;
-  background-color: #0b0610;
+  background-color: var(--color-negro);
   border-bottom: 3px solid var(--color-destacado);
+}
+
+/* El logo y la frase van en columna; margin-right: auto empuja las secciones y el botón a la derecha. */
+.barra-identidad {
+  display: flex;
+  flex-direction: column;
+  margin-right: auto;
+  line-height: 1.1;
 }
 
 .barra-marca {
   margin-right: auto;
+  font-size: 1.6rem;
   color: #ffffff;
   white-space: nowrap;
 }
 
-/* La parte "Bit" del logo, en naranja. */
+/* La parte "Bit" del logo, en naranja (también en el logo de Login y Registro). */
 .barra-marca-bit {
   color: #fb923c;
+}
+
+.barra-lema {
+  font-size: 0.8rem;
+  color: var(--color-suave);
+  white-space: nowrap;
 }
 
 /* order: 3 la manda después del botón (a la segunda fila) y width: 100% le hace ocupar la fila entera. */
@@ -113,7 +390,7 @@ a {
 /* NavLink le pone la clase "active" a la sección en la que estás: píldora dorada. */
 .barra-links a.active {
   background-color: var(--color-destacado);
-  color: #1c0a2b;
+  color: var(--color-fondo);
   font-weight: 700;
 }
 
@@ -144,109 +421,26 @@ a {
   }
 }
 
-
-/* ---------- 4. Botones ---------- */
-button {
-  font: inherit;
-  padding: 8px 14px;
-  border: none;
-  border-radius: var(--radio);
-  background-color: var(--color-acento);
-  color: #ffffff;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: var(--color-principal-oscuro);
-}
-
-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* ---------- 5. Formularios ---------- */
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 16px;
-  margin-bottom: 24px;
+/* ---------- 7. Tarjetas y pedidos ---------- */
+/* El "estilo tarjeta": fondo violeta, borde, esquinas redondeadas y sombra. */
+form,
+.tarjeta-pedido,
+.paso,
+.resumen-pedido,
+.acceso,
+.pantalla-sesion,
+.sin-pedidos {
   background-color: var(--color-superficie);
   border: 1px solid var(--color-borde);
   border-radius: var(--radio);
   box-shadow: var(--sombra);
 }
 
-label {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  font-weight: 600;
-}
-
-input,
-select {
-  font: inherit;
-  padding: 8px 10px;
-  border: 1px solid var(--color-borde);
-  border-radius: var(--radio);
-  background-color: var(--color-fondo);
-  color: var(--color-texto);
-}
-
-input:focus,
-select:focus {
-  outline: 2px solid var(--color-acento);
-  outline-offset: 1px;
-}
-
-/* Login y Registro: formulario angosto y centrado. */
-.login,
-.registro {
-  max-width: 400px;
-  margin: 24px auto;
-}
-
-/* ---------- 6. Mensajes ---------- */
-.error,
-.exito,
-.aviso {
-  margin: 8px 0;
-  padding: 8px 12px;
-  border-radius: var(--radio);
-}
-
-.error {
-  color: var(--color-error);
-  background-color: var(--color-error-fondo);
-}
-
-.exito {
-  color: var(--color-exito);
-  background-color: var(--color-exito-fondo);
-}
-
-.aviso {
-  color: var(--color-aviso);
-  background-color: var(--color-aviso-fondo);
-}
-
-.nota {
-  color: var(--color-suave);
-  font-size: 0.9rem;
-}
-
-/* ---------- 7. Tarjetas (pedidos, paso del armado, resumen) ---------- */
 .tarjeta-pedido,
 .paso,
 .resumen-pedido {
   padding: 16px;
   margin-bottom: 16px;
-  background-color: var(--color-superficie);
-  border: 1px solid var(--color-borde);
-  border-radius: var(--radio);
-  box-shadow: var(--sombra);
 }
 
 .tarjeta-pedido header {
@@ -256,13 +450,64 @@ select:focus {
   color: var(--color-suave);
 }
 
+/* Botones dentro de una tarjeta: uno al lado del otro y, si no entran, abajo. */
+.tarjeta-pedido button {
+  margin: 8px 8px 0 0;
+}
+
+/* El estado es una "píldora": fondo del color muy suave (15%) y el texto del color fuerte.
+   El color de cada estado lo pone su clase (TarjetaPedido elige cuál con CLASE_POR_ESTADO). */
 .estado {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.85rem;
   font-weight: 700;
+  white-space: nowrap;
   color: var(--color-acento);
 }
 
-.producto h4 {
-  margin: 12px 0 4px;
+.estado-pendiente {
+  color: #fbbf24;
+  background-color: rgba(251, 191, 36, 0.15);
+}
+
+.estado-preparacion {
+  color: #60a5fa;
+  background-color: rgba(96, 165, 250, 0.15);
+}
+
+.estado-lista {
+  color: #4ade80;
+  background-color: rgba(74, 222, 128, 0.15);
+}
+
+.estado-entregada {
+  color: var(--color-suave);
+  background-color: rgba(195, 173, 214, 0.12);
+}
+
+.estado-cancelado {
+  color: var(--color-peligro);
+  background-color: rgba(248, 113, 113, 0.15);
+}
+
+.motivo-cancelacion {
+  margin: 8px 0 0;
+  font-size: 0.95rem;
+  color: var(--color-peligro);
+}
+
+/* Cada hamburguesa del pedido: el dibujo a la izquierda (sobre un "plato" negro) y el detalle a la derecha. */
+.producto-con-dibujo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.producto-con-dibujo h4 {
+  margin: 0 0 4px;
 }
 
 .producto ul,
@@ -271,118 +516,36 @@ select:focus {
   padding-left: 20px;
 }
 
+.producto-dibujo {
+  flex-shrink: 0;
+  width: 84px;
+  padding: 8px 10px;
+  background-color: var(--color-negro);
+  border-radius: var(--radio);
+}
+
+.producto-dibujo .hamburguesa-chica {
+  max-width: 64px;
+  margin: 0 auto;
+}
+
+.producto-detalle {
+  flex: 1;
+}
+
 .total {
   color: var(--color-destacado);
   font-weight: 700;
 }
 
-/* Botones dentro de una tarjeta: uno al lado del otro y, si no entran, abajo. */
-.tarjeta-pedido button {
-  margin: 8px 8px 0 0;
-}
-
+/* Historial de estados de un pedido (Pedidos del admin). */
 .historial {
   margin-top: 12px;
   padding-left: 20px;
   color: var(--color-suave);
 }
 
-/* ---------- 8. Armar hamburguesa ---------- */
-.armar {
-  max-width: 640px;
-  margin: 0 auto;
-}
-
-.progreso {
-  color: var(--color-suave);
-  margin: 0 0 8px;
-}
-
-.paso ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-/* Una fila por ingrediente: nombre y precio a la izquierda, − cantidad + a la derecha. */
-.selector-ingrediente {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--color-borde);
-}
-
-.selector-ingrediente:last-child {
-  border-bottom: none;
-}
-
-.selector-ingrediente .nombre {
-  flex: 1;
-}
-
-.selector-ingrediente .precio {
-  color: var(--color-suave);
-}
-
-.cantidad {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.cantidad span {
-  min-width: 20px;
-  text-align: center;
-  font-weight: 700;
-}
-
-.cantidad button {
-  width: 44px;
-  height: 44px;
-  padding: 0;
-  font-size: 1.4rem;
-}
-
-.navegacion-pasos {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 16px;
-}
-
-.navegacion-pasos button {
-  flex: 1;
-}
-
-/* Solo la primera letra en mayúscula
-::first-letter apunta a la primera letra del elemento. Los nombres llegan en minuscula del backend */
-.selector-ingrediente .nombre::first-letter,
-.paso h3::first-letter {
-  text-transform: uppercase;
-}
-
-/* Cada hamburguesa del resumen, separada con una línea. */
-.resumen-pedido .producto {
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--color-borde);
-}
-
-/* "Quitar" como botón secundario: solo el borde, para que no compita con "Confirmar". */
-.resumen-pedido .producto button {
-  background-color: transparent;
-  color: var(--color-acento);
-  border: 1px solid var(--color-acento);
-  padding: 4px 10px;
-  font-size: 0.9rem;
-}
-
-/* "Confirmar pedido" (el hijo directo del resumen) ocupa todo el ancho. */
-.resumen-pedido > button {
-  width: 100%;
-  margin-top: 8px;
-}
-
-/* ---------- 9. Tablas (pantallas del admin) ---------- */
+/* ---------- 8. Tablas (pantallas del admin) ---------- */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -410,7 +573,7 @@ td button {
   font-size: 0.9rem;
 }
 
-/* ---------- 10. Celular: cada fila de una tabla se muestra como una tarjeta ---------- */
+/* Celular: cada fila de una tabla se muestra como una tarjeta. */
 @media (max-width: 699px) {
   /* La tabla deja de comportarse como tabla: cada parte pasa a ser un bloque. */
   table,
@@ -472,97 +635,298 @@ td button {
   }
 }
 
-/* ---------- 11. Pantallas anchas (desde 700px) ---------- */
-@media (min-width: 700px) {
-  .contenido {
-    padding: 24px;
-  }
-
-  /* Formularios del admin: los campos en dos columnas. */
-  .formulario-empleado,
-  .formulario-categoria,
-  .formulario-ingrediente {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-  }
-
-  /* El título y los mensajes ocupan las dos columnas. */
-  .formulario-empleado > h3,
-  .formulario-empleado > p,
-  .formulario-categoria > h3,
-  .formulario-categoria > p,
-  .formulario-ingrediente > h3,
-  .formulario-ingrediente > p {
-    grid-column: 1 / -1;
-  }
-
-  /* Los botones, del tamaño de su texto (no estirados a lo ancho de la columna). */
-  .formulario-empleado > button,
-  .formulario-categoria > button,
-  .formulario-ingrediente > button {
-    justify-self: start;
-  }
+/* ---------- 9. Armar hamburguesa ---------- */
+.armar {
+  max-width: 640px;
+  margin: 0 auto;
 }
 
-/* Botón secundario: solo con borde, para acciones que no son la principal. */
-.boton-secundario {
-  width: 100%;
-  background-color: transparent;
-  color: var(--color-acento);
-  border: 1px solid var(--color-acento);
-}
-
-.boton-secundario:hover {
-  background-color: var(--color-borde);
-}
-
-/* Filtro de Pedidos del admin: el desplegable y el botón en una fila. */
-.filtro {
+/* Franja con la foto de fondo. background-image tiene dos capas separadas por coma:
+   la primera (el degradado violeta) queda encima de la segunda (la foto).
+   El degradado es oscuro a la izquierda, donde va el texto, y transparente a la derecha,
+   donde está la hamburguesa. */
+.banner {
   display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 180px;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: var(--radio);
+  overflow: hidden;
+  background-image:
+    linear-gradient(to right, rgba(28, 10, 43, 0.95) 35%, rgba(28, 10, 43, 0) 75%),
+    url('./assets/banner-armar.webp');
+  background-size: cover;
+  background-position: center;
+  box-shadow: var(--sombra);
+}
+
+.banner h2 {
+  margin: 0;
+  font-size: clamp(1.6rem, 6vw, 2.2rem);
+  color: #ffffff;
+}
+
+.banner p {
+  margin: 4px 0 0;
+  color: var(--color-suave);
+}
+
+@media (min-width: 700px) {
+  .banner {
+    min-height: 240px;
+    padding: 28px;
+  }
+}
+
+.progreso {
+  color: var(--color-suave);
+  margin: 0 0 8px;
+}
+
+.paso ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Una fila por ingrediente: nombre y precio a la izquierda, − cantidad + a la derecha. */
+.selector-ingrediente {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-borde);
+}
+
+.selector-ingrediente:last-child {
+  border-bottom: none;
+}
+
+.selector-ingrediente .nombre {
+  flex: 1;
+}
+
+.selector-ingrediente .precio {
+  color: var(--color-suave);
+}
+
+/* Solo la primera letra en mayúscula: los nombres llegan en minúscula del backend.
+   ::first-letter apunta a la primera letra del elemento. */
+.selector-ingrediente .nombre::first-letter,
+.paso h3::first-letter {
+  text-transform: uppercase;
+}
+
+.cantidad {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cantidad span {
+  min-width: 20px;
+  text-align: center;
+  font-weight: 700;
+}
+
+/* 44 × 44 px: el tamaño mínimo recomendado para tocar con el dedo. */
+.cantidad button {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  font-size: 1.4rem;
+}
+
+.navegacion-pasos {
+  display: flex;
   gap: 8px;
   margin-bottom: 16px;
 }
 
-/* Inicio del admin: una tarjeta por sección. */
-.accesos {
-  display: grid;
-  gap: 12px;
+.navegacion-pasos button {
+  flex: 1;
 }
 
-.acceso {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 16px;
-  background-color: var(--color-superficie);
-  border: 1px solid var(--color-borde);
-  border-radius: var(--radio);
-  box-shadow: var(--sombra);
-  color: var(--color-texto);
-  text-decoration: none;
+/* Cada hamburguesa del resumen, separada con una línea. */
+.resumen-pedido .producto {
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--color-borde);
 }
 
-.acceso strong {
+/* "Quitar" como botón secundario: solo el borde, para que no compita con "Confirmar". */
+.resumen-pedido .producto button {
+  background-color: transparent;
   color: var(--color-acento);
-  font-size: 1.1rem;
+  border: 1px solid var(--color-acento);
+  padding: 4px 10px;
+  font-size: 0.9rem;
 }
 
-.acceso:hover {
-  border-color: var(--color-acento);
+/* "Confirmar pedido" (el hijo directo del resumen) ocupa todo el ancho. */
+.resumen-pedido > button {
+  width: 100%;
+  margin-top: 8px;
 }
 
-@media (min-width: 700px) {
-  .accesos {
-    grid-template-columns: 1fr 1fr;
+/* El recuadro negro de la hamburguesa. En celular: queda pegado abajo de la pantalla
+   mientras se elige (sticky), con la hamburguesa chiquita, el precio y el botón en una fila. */
+.armar-resumen {
+  position: sticky;
+  bottom: 8px;
+  z-index: 5;
+  display: grid;
+  grid-template-columns: 64px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 20px 14px 12px;
+  overflow: hidden;
+  background-color: var(--color-negro);
+  border-radius: var(--radio);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+/* El cheddar derretido que chorrea desde arriba del recuadro: un dibujo SVG
+   escrito adentro del CSS (data:image/svg+xml). %23 es el # del color, escrito así para que funcione en una URL. */
+.armar-resumen::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 14px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 34' preserveAspectRatio='none'%3E%3Cpath fill='%23fbbf24' d='M0 0H220V12C214 12 212 16 212 22C212 28 204 28 204 22C204 16 200 13 192 13C184 13 182 17 182 27C182 35 172 35 172 27C172 17 168 13 158 13C148 13 146 16 146 20C146 25 139 25 139 20C139 15 134 12 122 12C110 12 107 16 107 30C107 38 96 38 96 30C96 17 92 13 80 13C70 13 68 16 68 22C68 27 61 27 61 22C61 16 56 13 46 13C36 13 34 18 34 26C34 33 25 33 25 26C25 17 20 12 10 12C4 12 0 14 0 14Z'/%3E%3C/svg%3E");
+  background-size: 100% 100%;
+}
+
+.armar-resumen .hamburguesa {
+  max-width: 64px;
+  margin: 0;
+}
+
+.armar-resumen h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.armar-resumen .total {
+  margin: 0;
+  font-size: 1.3rem;
+}
+
+/* En compu: dos columnas. El recuadro va a la derecha y queda fijo arriba al scrollear. */
+@media (min-width: 900px) {
+  .armar {
+    max-width: 960px;
+  }
+
+  .armar-columnas {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 24px;
+    align-items: start;
+  }
+
+  .armar-resumen {
+    top: 72px;
+    bottom: auto;
+    display: block;
+    margin-top: 0;
+    padding: 52px 20px 20px;
+    text-align: center;
+  }
+
+  .armar-resumen::before {
+    height: 36px;
+  }
+
+  /* No ocupa más del 30% del alto de la pantalla. */
+  .armar-resumen .hamburguesa {
+    max-width: min(240px, 30vh);
+    margin: 0 auto 16px;
+  }
+
+  .armar-resumen h3 {
+    font-size: 1.4rem;
+  }
+
+  .armar-resumen .total {
+    font-size: 1.8rem;
+  }
+
+  .armar-resumen button {
+    width: 100%;
+    margin-top: 12px;
+    padding: 12px;
   }
 }
 
-/* ---------- 12. Pantalla de bienvenida ---------- */
+/* ---------- 10. Hamburguesa por capas (DibujoHamburguesa) ---------- */
+/* Columna invertida: el primer elemento (el pan de abajo) queda abajo y cada capa nueva, arriba.
+   isolation: isolate hace que los z-index de adentro solo se comparen entre ellos:
+   así ninguna capa puede pasar por delante de la barra de navegación. */
+.hamburguesa {
+  display: flex;
+  flex-direction: column-reverse;
+  width: 100%;
+  max-width: 260px;
+  margin: 16px auto;
+  isolation: isolate;
+}
 
+.hamburguesa img {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: auto;
+}
 
+/* La versión chica (tarjetas de pedido). Va después de .hamburguesa para ganarle. */
+.hamburguesa-chica {
+  max-width: 64px;
+  margin: 0;
+}
+
+/* Cuánto se hunde cada capa sobre la de abajo (en % del ancho, así funciona igual en grande y en chico). */
+.capa-carne { margin-bottom: -9%; }
+.capa-queso { margin-bottom: -17%; }
+.capa-panceta { margin-bottom: -10%; }
+.capa-huevo { margin-bottom: -8%; }
+.capa-lechuga { margin-bottom: -14%; }
+.capa-pepino { margin-bottom: -8%; }
+.capa-tomate { margin-bottom: -7%; }
+.capa-cebolla { margin-bottom: -6%; }
+.capa-pan-arriba { margin-bottom: -7%; }
+
+/* La capa nueva cae desde arriba con un rebote chico. */
+.capa {
+  animation: caer 0.35s cubic-bezier(0.3, 1.4, 0.6, 1);
+}
+
+.hamburguesa-chica .capa {
+  animation: none;
+}
+
+@keyframes caer {
+  from {
+    opacity: 0;
+    transform: translateY(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .capa {
+    animation: none;
+  }
+}
+
+/* ---------- 11. Pantalla de bienvenida ---------- */
 /* Ocupa toda la ventana (position: fixed + inset: 0), aunque esté adentro del contenedor de 960px.
    Fondo claro con dos manchas de color difuminadas en las esquinas. */
 .bienvenida {
@@ -576,8 +940,8 @@ td button {
   text-align: center;
   background-color: #fffaf5;
   background-image:
-  radial-gradient(circle at 15% 20%, rgba(251, 146, 60, 0.35), transparent 40%),
-  radial-gradient(circle at 85% 80%, rgba(250, 204, 21, 0.3), transparent 40%);
+    radial-gradient(circle at 15% 20%, rgba(251, 146, 60, 0.35), transparent 40%),
+    radial-gradient(circle at 85% 80%, rgba(250, 204, 21, 0.3), transparent 40%);
 }
 
 /* El texto y el botón entran subiendo al abrir la página. */
@@ -623,9 +987,7 @@ td button {
   position: relative;
   margin: 0;
   font-size: clamp(2.2rem, 8vw, 4.5rem);
-  font-weight: 800;
   line-height: 1.1;
-  letter-spacing: -0.02em;
   color: #111111;
 }
 
@@ -685,49 +1047,7 @@ td button {
   }
 }
 
-/* ---------- 13. Banner de Armar hamburguesa ---------- */
-
-/* Franja con la foto de fondo. background-image tiene dos capas separadas por coma:
-   la primera (el degradado violeta) queda encima de la segunda (la foto).
-   El degradado es oscuro a la izquierda, donde va el texto, y transparente a la derecha,
-   donde está la hamburguesa. */
-.banner {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  min-height: 180px;
-  padding: 20px;
-  margin-bottom: 20px;
-  border-radius: var(--radio);
-  overflow: hidden;
-  background-image:
-    linear-gradient(to right, rgba(28, 10, 43, 0.95) 35%, rgba(28, 10, 43, 0) 75%),
-    url('./assets/banner-armar.webp');
-  background-size: cover;
-  background-position: center;
-  box-shadow: var(--sombra);
-}
-
-.banner h2 {
-  margin: 0;
-  font-size: clamp(1.6rem, 6vw, 2.2rem);
-  color: #ffffff;
-}
-
-.banner p {
-  margin: 4px 0 0;
-  color: var(--color-suave);
-}
-
-@media (min-width: 700px) {
-  .banner {
-    min-height: 240px;
-    padding: 28px;
-  }
-}
-
-/* ---------- 14. Login y Registro con foto ---------- */
-
+/* ---------- 12. Login y Registro con foto ---------- */
 /* Una sola tarjeta con dos partes: la foto y el formulario.
    En celular, una columna (la foto arriba). Desde 700px, dos columnas iguales. */
 .pantalla-sesion {
@@ -735,10 +1055,6 @@ td button {
   max-width: 880px;
   margin: 24px auto;
   overflow: hidden;
-  background-color: var(--color-superficie);
-  border: 1px solid var(--color-borde);
-  border-radius: var(--radio);
-  box-shadow: var(--sombra);
 }
 
 /* Div vacío que muestra la foto. El degradado termina en el color de la tarjeta
@@ -752,20 +1068,26 @@ td button {
   background-position: center 35%;
 }
 
-/* Adentro de la tarjeta, el Login y el Registro ya no necesitan su ancho ni su margen propios. */
-.pantalla-sesion .login,
-.pantalla-sesion .registro {
-  max-width: none;
-  margin: 0;
+.login,
+.registro {
   padding: 24px;
 }
 
-/* El form tiene su propia tarjeta (sección 5): acá se la sacamos para que no quede una tarjeta adentro de otra. */
+/* El form tiene su propia tarjeta (sección 7): acá se la sacamos para que no quede una tarjeta adentro de otra. */
 .pantalla-sesion form {
   padding: 0;
   background-color: transparent;
   border: none;
   box-shadow: none;
+}
+
+/* El logo grande arriba del formulario. */
+.marca-sesion {
+  margin: 0 0 8px;
+  font-family: var(--fuente-titulos);
+  font-size: 2.4rem;
+  line-height: 1;
+  color: #ffffff;
 }
 
 @media (min-width: 700px) {
@@ -783,8 +1105,8 @@ td button {
   }
 
   /* El formulario queda centrado a lo alto de la tarjeta. */
-  .pantalla-sesion .login,
-  .pantalla-sesion .registro {
+  .login,
+  .registro {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -792,9 +1114,8 @@ td button {
   }
 }
 
-/* ---------- 15. Mis pedidos vacío ---------- */
-
-/* Tarjeta con la foto, el texto y el link, uno abajo del otro y centrados. */
+/* ---------- 13. Otras pantallas: Mis pedidos vacío, inicio del admin y páginas de error ---------- */
+/* Mis pedidos sin pedidos: la foto, el texto y el link, uno abajo del otro y centrados. */
 .sin-pedidos {
   display: flex;
   flex-direction: column;
@@ -802,10 +1123,6 @@ td button {
   gap: 12px;
   padding: 32px 16px;
   text-align: center;
-  background-color: var(--color-superficie);
-  border: 1px solid var(--color-borde);
-  border-radius: var(--radio);
-  box-shadow: var(--sombra);
 }
 
 /* height: auto mantiene la proporción de la foto. */
@@ -821,22 +1138,37 @@ td button {
   font-size: 1.1rem;
 }
 
-/* El link con forma de botón. */
-.sin-pedidos a {
-  display: inline-block;
-  padding: 10px 20px;
-  border-radius: var(--radio);
-  background-color: var(--color-principal);
-  color: #ffffff;
-  font-weight: 600;
+/* Inicio del admin: una tarjeta por sección. */
+.accesos {
+  display: grid;
+  gap: 12px;
+}
+
+.acceso {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px;
+  color: var(--color-texto);
   text-decoration: none;
 }
 
-.sin-pedidos a:hover {
-  background-color: var(--color-principal-oscuro);
+.acceso strong {
+  color: var(--color-acento);
+  font-size: 1.1rem;
 }
 
-/* ---------- 16. Página sin permiso (403) ---------- */
+.acceso:hover {
+  border-color: var(--color-acento);
+}
+
+@media (min-width: 700px) {
+  .accesos {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Páginas de error (403 y 404). */
 .pagina-error {
   max-width: 480px;
   margin: 48px auto;
@@ -850,7 +1182,6 @@ td button {
 .pagina-error-codigo {
   margin: 0;
   font-size: clamp(4rem, 18vw, 7rem);
-  font-weight: 800;
   line-height: 1;
   color: var(--color-acento);
 }
@@ -862,379 +1193,4 @@ td button {
 .pagina-error p {
   margin: 0 0 12px;
   color: var(--color-suave);
-}
-
-.pagina-error a {
-  display: inline-block;
-  padding: 10px 20px;
-  border-radius: var(--radio);
-  background-color: var(--color-principal);
-  color: #ffffff;
-  font-weight: 600;
-  text-decoration: none;
-}
-
-/* ---------- 17. Hamburguesa por capas ---------- */
-
-/* Columna invertida: el primer elemento (el pan de abajo) queda abajo y cada capa nueva, arriba. */
-.hamburguesa {
-  display: flex;
-  flex-direction: column-reverse;
-  width: 100%;
-  max-width: 260px;
-  margin: 16px auto;
-  /*los z-index de adentro solo se comparan entre ellos y ninguna capa puede pasar por delante de la barra de navegación.*/
-  isolation: isolate;
-}
-
-.hamburguesa img {
-  display: block;
-  position: relative;
-  width: 100%;
-  height: auto;
-}
-
-.hamburguesa-chica {
-  max-width: 64px;
-  margin: 0;
-}
-
-/* Cuánto se hunde cada capa sobre la de abajo (en % del ancho, así funciona igual en grande y en chico). */
-.capa-carne { margin-bottom: -9%; }
-.capa-queso { margin-bottom: -17%; }
-.capa-panceta { margin-bottom: -10%; }
-.capa-huevo { margin-bottom: -8%; }
-.capa-lechuga { margin-bottom: -14%; }
-.capa-pepino { margin-bottom: -8%; }
-.capa-tomate { margin-bottom: -7%; }
-.capa-cebolla { margin-bottom: -6%; }
-.capa-pan-arriba { margin-bottom: -7%; }
-
-/* La capa nueva cae desde arriba con un rebote chico. */
-.capa {
-  animation: caer 0.35s cubic-bezier(0.3, 1.4, 0.6, 1);
-}
-
-.hamburguesa-chica .capa {
-  animation: none;
-}
-
-@keyframes caer {
-  from {
-    opacity: 0;
-    transform: translateY(-40px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .capa {
-    animation: none;
-  }
-}
-
-/* ---------- 18. Armador en dos columnas y recuadro negro con cheddar ---------- */
-
-/* En celular: el recuadro queda pegado abajo de la pantalla mientras se elige
-   (sticky), con la hamburguesa chiquita, el precio y el botón en una fila. */
-.armar-resumen {
-  position: sticky;
-  bottom: 8px;
-  z-index: 5;
-  display: grid;
-  grid-template-columns: 64px 1fr auto;
-  align-items: center;
-  gap: 12px;
-  margin-top: 16px;
-  padding: 20px 14px 12px;
-  overflow: hidden;
-  background-color: #0b0610;
-  border-radius: var(--radio);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-}
-
-/* El cheddar derretido que chorrea desde arriba del recuadro: un dibujo SVG
-   escrito adentro del CSS (data:image/svg+xml). %23 es el # del color, escrito así para que funcione en una URL. */
-.armar-resumen::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 14px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 34' preserveAspectRatio='none'%3E%3Cpath fill='%23fbbf24' d='M0 0H220V12C214 12 212 16 212 22C212 28 204 28 204 22C204 16 200 13 192 13C184 13 182 17 182 27C182 35 172 35 172 27C172 17 168 13 158 13C148 13 146 16 146 20C146 25 139 25 139 20C139 15 134 12 122 12C110 12 107 16 107 30C107 38 96 38 96 30C96 17 92 13 80 13C70 13 68 16 68 22C68 27 61 27 61 22C61 16 56 13 46 13C36 13 34 18 34 26C34 33 25 33 25 26C25 17 20 12 10 12C4 12 0 14 0 14Z'/%3E%3C/svg%3E");
-  background-size: 100% 100%;
-}
-
-.armar-resumen .hamburguesa {
-  max-width: 64px;
-  margin: 0;
-}
-
-.armar-resumen h3 {
-  margin: 0;
-  font-size: 1rem;
-}
-
-.armar-resumen .total {
-  margin: 0;
-  font-size: 1.3rem;
-}
-
-/* Botón dorado (color cheddar) con letra oscura para que se lea. */
-.boton-dorado {
-  background-color: var(--color-destacado);
-  color: #1c0a2b;
-  font-weight: 700;
-}
-
-.boton-dorado:hover {
-  background-color: #f59e0b;
-}
-
-/* En compu: dos columnas. El recuadro va a la derecha y queda fijo arriba al scrollear. */
-@media (min-width: 900px) {
-  .armar {
-    max-width: 960px;
-  }
-
-  .armar-columnas {
-    display: grid;
-    grid-template-columns: 1fr 320px;
-    gap: 24px;
-    align-items: start;
-  }
-
-  .armar-resumen {
-    top: 72px;
-    bottom: auto;
-    display: block;
-    margin-top: 0;
-    padding: 52px 20px 20px;
-    text-align: center;
-  }
-
-  .armar-resumen::before {
-    height: 36px;
-  }
-
-  .armar-resumen .hamburguesa {
-    max-width: min(240px, 30vh); /*no ocupa mas del 30% del alto de pantalla*/
-    margin: 0 auto 16px;
-  }
-
-  .armar-resumen h3 {
-    font-size: 1.4rem;
-  }
-
-  .armar-resumen .total {
-    font-size: 1.8rem;
-  }
-
-  .armar-resumen button {
-    width: 100%;
-    margin-top: 12px;
-    padding: 12px;
-  }
-}
-
-/* ---------- 19. Tipografía de los títulos ---------- */
-/* Lilita One viene de Google Fonts (se carga en index.html). Tiene un solo grosor,
-   por eso font-weight: 400: si se le pide negrita, el navegador la "engorda" a mano y se ve fea.
-   Va al final del archivo para ganarles a las reglas anteriores que ponían otro grosor. */
-h1,
-h2,
-h3,
-.barra-marca,
-.bienvenida-titulo,
-.pagina-error-codigo {
-  font-family: var(--fuente-titulos);
-  font-weight: 400;
-  letter-spacing: 0.01em;
-}
-
-.barra-marca {
-  font-size: 1.6rem;
-}
-
-/* ---------- 20. Hamburguesa chiquita en las tarjetas de pedido ---------- */
-/* Cada hamburguesa del pedido: el dibujo a la izquierda (sobre un "plato" negro) y el detalle a la derecha. */
-.producto-con-dibujo {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-top: 12px;
-}
-
-.producto-dibujo {
-  flex-shrink: 0;
-  width: 84px;
-  padding: 8px 10px;
-  background-color: #0b0610;
-  border-radius: var(--radio);
-}
-
-.producto-dibujo .hamburguesa-chica {
-  max-width: 64px;
-  margin: 0 auto;
-}
-
-.producto-detalle {
-  flex: 1;
-}
-
-.producto-con-dibujo h4 {
-  margin: 0 0 4px;
-}
-
-
-/* ---------- 21. Logo con frase en la barra y logo en Login/Registro ---------- */
-/* El logo y la frase van en columna; margin-right: auto empuja las secciones y el botón a la derecha. */
-.barra-identidad {
-  display: flex;
-  flex-direction: column;
-  margin-right: auto;
-  line-height: 1.1;
-}
-
-.barra-lema {
-  font-size: 0.8rem;
-  color: var(--color-suave);
-  white-space: nowrap;
-}
-
-/* El logo grande arriba del formulario de Login y Registro. */
-.marca-sesion {
-  margin: 0 0 8px;
-  font-family: var(--fuente-titulos);
-  font-size: 2.4rem;
-  line-height: 1;
-  color: #ffffff;
-}
-
-/* ---------- 22. Cargando y aviso de servidor dormido ---------- */
-/* Pantalla de carga: círculo que gira, texto y (si tarda) el aviso. */
-.cargando,
-.error-reintento {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  padding: 48px 16px;
-  text-align: center;
-}
-
-.cargando p {
-  margin: 0;
-  color: var(--color-suave);
-}
-
-/* El círculo: un borde gris con la parte de arriba dorada, girando. */
-.cargando-icono {
-  width: 36px;
-  height: 36px;
-  border: 4px solid var(--color-borde);
-  border-top-color: var(--color-destacado);
-  border-radius: 50%;
-  animation: girar-carga 0.9s linear infinite;
-}
-
-@keyframes girar-carga {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* El aviso del servidor dormido (también se usa abajo del botón en Login y Registro). */
-.cargando .aviso-demora,
-.aviso-demora {
-  max-width: 420px;
-  margin: 8px 0 0;
-  font-size: 0.9rem;
-  color: var(--color-destacado);
-}
-
-/* Si la persona pidió menos movimiento, el círculo gira mucho más lento. */
-@media (prefers-reduced-motion: reduce) {
-  .cargando-icono {
-    animation-duration: 3s;
-  }
-}
-
-/* ---------- 23. Color de cada estado del pedido ---------- */
-/* El estado es una "píldora": fondo del color muy suave (15%) y el texto del color fuerte. */
-.estado {
-  display: inline-block;
-  padding: 2px 10px;
-  border-radius: 999px;
-  font-size: 0.85rem;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.estado-pendiente {
-  color: #fbbf24;
-  background-color: rgba(251, 191, 36, 0.15);
-}
-
-.estado-preparacion {
-  color: #60a5fa;
-  background-color: rgba(96, 165, 250, 0.15);
-}
-
-.estado-lista {
-  color: #4ade80;
-  background-color: rgba(74, 222, 128, 0.15);
-}
-
-.estado-entregada {
-  color: var(--color-suave);
-  background-color: rgba(195, 173, 214, 0.12);
-}
-
-.estado-cancelado {
-  color: #f87171;
-  background-color: rgba(248, 113, 113, 0.15);
-}
-
-.motivo-cancelacion {
-  margin: 8px 0 0;
-  font-size: 0.95rem;
-  color: #f87171;
-}
-
-/* ---------- 24. Errores debajo de cada campo ---------- */
-/* El mensaje pegado abajo del campo (el margen negativo lo acerca, porque el form tiene gap). */
-.error-campo {
-  margin: -4px 0 4px;
-  font-size: 0.9rem;
-  color: #f87171;
-}
-
-/* El campo con error se marca con borde rojo. aria-invalid lo pone React según haya error o no. */
-input[aria-invalid="true"] {
-  border-color: #f87171;
-}
-
-/* ---------- 25. Buscador de usuarios ---------- */
-/* En Usuarios, el buscador y el desplegable ocupan el ancho disponible (en el celular, uno abajo del otro). */
-.admin-usuarios .filtro label, .buscador label {
-  flex: 1 1 200px;
-}
-
-/* ---------- 26. Botones de acciones peligrosas ---------- */
-/* Cancelar un pedido, desactivar una cuenta, dar de baja un ingrediente:
-   borde y texto rojos sobre fondo transparente, para distinguirlos de las acciones normales. */
-.boton-peligro {
-  background-color: transparent;
-  color: #f87171;
-  border: 1px solid #f87171;
-}
-
-.boton-peligro:hover {
-  background-color: #f87171;
-  color: #1c0a2b;
 }

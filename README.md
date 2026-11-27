@@ -13,9 +13,11 @@ Hay tres roles. Al iniciar sesión, cada uno va directo a su pantalla y solo ve 
 
 | Rol | Pantallas |
 |---|---|
-| **Cliente** | Registrarse e iniciar sesión. **Armar hamburguesa**: un paso por categoría (pan, carne, etc.), con − y + por ingrediente, respetando mínimos, máximos y stock; varias hamburguesas en un mismo pedido, precio estimado y confirmación. **Mis pedidos**: historial y cancelación mientras está Pendiente. |
+| **Cliente** | Registrarse e iniciar sesión. **Armar hamburguesa**: un paso por categoría (pan, carne, etc.), con − y + por ingrediente, respetando mínimos, máximos y stock, mientras la hamburguesa se va dibujando por capas al costado; varias hamburguesas en un mismo pedido, precio estimado y confirmación. Lo agregado y sin confirmar queda guardado en el navegador aunque se recargue la página. **Mis pedidos**: historial con el color de cada estado, motivo si se canceló, y cancelación mientras está Pendiente. |
 | **Cocinero** | **Pedidos de cocina**: pedidos activos del más viejo al más nuevo; pasar al estado siguiente (Pendiente → En preparación → Lista para retirar → Entregada) o cancelar con motivo. |
-| **Administrador** | **Pedidos**: todos, con filtro por estado e historial de cambios. **Usuarios**: activar/desactivar cuentas y crear cocineros y administradores. **Categorías**: crear y editar (son los pasos del armado). **Ingredientes**: crear, editar, reponer stock, dar de baja y reactivar. |
+| **Administrador** | **Pedidos**: filtro por estado, período (hoy, últimos 7 días o todos), buscador por cliente e historial de cambios. **Usuarios**: buscador por nombre o email, filtro por rol, activar/desactivar cuentas y crear cocineros y administradores. **Categorías**: crear y editar (son los pasos del armado). **Ingredientes**: crear, editar, reponer stock, dar de baja y reactivar. |
+
+Sin sesión se ve una pantalla de bienvenida. Si alguien entra a una sección que no es de su rol, ve una página 403, y si la dirección no existe, una 404.
 
 ## Tecnologías y librerías
 
@@ -81,37 +83,49 @@ BurgaBit-frontend/
 └── src/
     ├── main.jsx               Punto de entrada: BrowserRouter + proveedor de sesión + App
     ├── App.jsx                Rutas de la app y qué rol puede entrar a cada una
-    ├── index.css              Estilos de toda la app
+    ├── index.css              Estilos de toda la app, ordenados por tema
+    ├── assets/                Imágenes: fotos (webp) y las 10 capas de la hamburguesa (capas/)
     ├── paginas/               Una pantalla por archivo
+    │   ├── Bienvenida.jsx          Primera pantalla sin sesión
     │   ├── Login.jsx
     │   ├── Registro.jsx
-    │   ├── ArmarHamburguesa.jsx
+    │   ├── ArmarHamburguesa.jsx    Armado paso a paso, pedido y confirmación
     │   ├── MisPedidos.jsx
     │   ├── Cocina.jsx
+    │   ├── AdminInicio.jsx         Accesos a las secciones del admin
     │   ├── AdminPedidos.jsx
     │   ├── AdminUsuarios.jsx
     │   ├── AdminCategorias.jsx
-    │   └── AdminIngredientes.jsx
+    │   ├── AdminIngredientes.jsx
+    │   └── PaginaError.jsx         403 (sin permiso) y 404 (no existe)
     ├── componentes/           Piezas reutilizables
-    │   ├── BarraNavegacion.jsx     Links según el rol y cerrar sesión
+    │   ├── BarraNavegacion.jsx     Logo, links según el rol y cerrar sesión
     │   ├── RutaProtegida.jsx       Deja pasar solo con sesión y con el rol permitido
+    │   ├── DibujoHamburguesa.jsx   La hamburguesa dibujada por capas (armador y tarjetas)
     │   ├── TarjetaPedido.jsx       Un pedido (lo usan Mis pedidos, Cocina y Pedidos del admin)
     │   ├── SelectorIngrediente.jsx Fila del armado: nombre, precio y − cantidad +
     │   ├── ResumenPedido.jsx       Hamburguesas agregadas, total estimado y confirmar
     │   ├── HistorialEstados.jsx    Quién cambió el estado de un pedido y cuándo
+    │   ├── Cargando.jsx            Pantalla de carga
+    │   ├── AvisoDemora.jsx         Aviso si el servidor tarda más de 3 segundos
+    │   ├── ErrorConReintento.jsx   Error al cargar una pantalla, con botón Reintentar
     │   ├── FormularioEmpleado.jsx  Crear cuentas de cocinero o administrador
     │   ├── FormularioCategoria.jsx Crear o editar una categoría
     │   └── FormularioIngrediente.jsx Crear o editar un ingrediente
-    ├── contexto/              Sesión compartida
+    ├── contexto/              Sesión compartida y hooks propios
     │   ├── SesionContexto.js       El contexto de React
     │   ├── SesionProveedor.jsx     Guarda el token, lee el rol del JWT, guardar/cerrar sesión
     │   ├── usePedidoConSesion.js   Hook: pedidos con token; cierra la sesión si el backend responde 401
+    │   ├── useCargarDatos.js       Hook: carga una lista al abrir la pantalla (datos, cargando, error, recargar)
     │   └── inicioSegunRol.js       Pantalla de inicio de cada rol
     ├── servicios/             Comunicación con el backend
     │   ├── api.js                  pedirAlBackend: fetch, token, errores en español
     │   └── authServicio.js         Login y registro
-    └── utilidades/
-        └── formato.js              Precios y fechas en formato argentino
+    └── utilidades/            Funciones comunes (sin React)
+        ├── formato.js              Precios y fechas en formato argentino
+        ├── validaciones.js         Validaciones de los formularios
+        ├── busqueda.js             Buscar sin importar mayúsculas ni tildes
+        └── pedidoGuardado.js       Guardar en el navegador el pedido sin confirmar
 ```
 
 ## Cómo se cumple la consigna
@@ -119,9 +133,9 @@ BurgaBit-frontend/
 | Punto | Dónde |
 |---|---|
 | SPA responsive | React Router (una sola página) y `index.css` con `@media` |
-| Respuesta visual en lo asíncrono | Mensajes de "Cargando…", botones apagados con "Enviando…/Guardando…" mientras esperan, errores del backend en pantalla |
+| Respuesta visual en lo asíncrono | Pantalla de carga (`Cargando`), aviso si el servidor tarda más de 3 segundos (`AvisoDemora`, también debajo de los botones que esperan), botones apagados con "Enviando…/Guardando…", errores del backend en pantalla y botón "Reintentar" si una pantalla no carga |
 | Solo se comunica con el backend | Todos los datos salen de la API a través de `servicios/api.js` |
-| Validaciones antes de enviar | Login, Registro, armado (mínimos, máximos, stock), formularios del admin |
+| Validaciones antes de enviar | Login y Registro (error debajo de cada campo), armado (mínimos, máximos, stock), formularios del admin |
 | Sesión con JWT | `contexto/`: token en `localStorage`, rol leído del JWT, rutas protegidas por rol, cierre de sesión si el token vence |
 | Desplegado | Render (Static Site) — ver abajo |
 | README | Este archivo |
@@ -142,7 +156,7 @@ Publicado en **Render** como *Static Site*, conectado a este repositorio: cada `
 - Los pedidos de la cocina no se actualizan solos: hay un botón "Actualizar".
 - No se pueden borrar categorías ni cambiar la categoría de un ingrediente (el backend no lo permite).
 - El token se guarda en `localStorage`, que es accesible desde JavaScript; la alternativa más segura (cookies `httpOnly`) requiere cambios en el backend.
-
+- Los buscadores y filtros del admin (cliente, período, nombre y rol) filtran en el navegador lo que ya devolvió el backend, porque la API no tiene búsqueda ni paginación. Con muchísimos datos convendría filtrar y paginar en el backend. El filtro por estado de los pedidos sí se resuelve en el backend.
 
 ## Créditos
 
